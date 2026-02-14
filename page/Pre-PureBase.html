@@ -38,7 +38,11 @@
                         <img width="60" height="60" src="/image/metro_logo_single.webp" alt="Leon's Metro Transit logo" class="h-15 w-15">
                         <span class="text-lg font-semibold">Leeon's Site</span>
                     </div>
-                    <a href="/" class="text-gray-700 hover:text-gray-900 font-medium">主页</a>
+                    <nav class="flex items-center">
+                        <a href="/page/old/Pre-PureBase.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium">回到旧版</a>
+                        <p style="margin: 0 2rem;">&vert;</p>
+                        <a href="/" class="text-gray-700 hover:text-gray-900 font-medium">主页</a>
+                    </nav>
                 </div>
             </div>
         </header>
@@ -308,6 +312,11 @@
         <img id="modal-image" class="modal-image">
     </div>
 
+    
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all duration-300 opacity-0 pointer-events-none z-40" onclick="scrollToTop()">
+        <i class="fa fa-chevron-up"></i>
+    </button>
+
     <script>
         function showModal(imageElement) {
             var modal = document.getElementById("modal");
@@ -320,6 +329,23 @@
             var modal = document.getElementById("modal");
             modal.style.display = "none";
         }
+
+        
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                backToTop.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
 
         // 轮播图功能
         document.addEventListener('DOMContentLoaded', function() {

@@ -41,7 +41,11 @@
                         <img width="60" height="60" src="/image/metro_logo_single.webp" alt="Leon's Metro Transit logo" class="h-15 w-15">
                         <span class="text-lg font-semibold">Leeon's Site</span>
                     </div>
-                    <a href="/" class="text-gray-700 hover:text-gray-900 font-medium">主页</a>
+                    <nav class="flex items-center">
+                        <a href="/page/old/Yaoqing.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium">回到旧版</a>
+                        <p style="margin: 0 2rem;">&vert;</p>
+                        <a href="/" class="text-gray-700 hover:text-gray-900 font-medium">主页</a>
+                    </nav>
                 </div>
             </div>
         </header>
@@ -413,14 +417,14 @@
             </div>
         </main>
 
-        <footer class="bg-white py-8">
+        <footer class="bg-gray-800 text-white py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <img width="60" height="60" src="/image/metro_logo_single.webp" alt="Leon's Metro Transit logo" class="h-15 w-15">
+                        <img width="60" height="60" src="/image/metro_logo_single.webp" alt="Leon's Metro Transit logo" class="h-12 w-12">
                         <span class="text-lg font-semibold">Leeon's Site</span>
                     </div>
-                    <p class="text-gray-600">&copy; 2026 Leeon's Site. All rights not reserved.</p>
+                    <p class="text-gray-400">&copy;2025 Leon's Transit Company. All rights not reserved.</p>
                 </div>
             </div>
         </footer>
@@ -429,6 +433,10 @@
     <div id="modal" class="modal modal-hidden" onclick="hideModal()">
         <img id="modalImage" class="modal-image" src="" alt="放大图片" onclick="event.stopPropagation()">
     </div>
+
+    <button id="backToTop" class="fixed bottom-8 right-8 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all duration-300 opacity-0 pointer-events-none z-40" onclick="scrollToTop()">
+        <i class="fa fa-chevron-up"></i>
+    </button>
 
     <script>
         function showModal(img) {
@@ -444,6 +452,22 @@
             modal.classList.add('modal-hidden');
             modal.classList.remove('flex');
         }
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        window.addEventListener('scroll', function() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                backToTop.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
 
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
