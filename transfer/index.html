@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方域大陆 Leon's · 地铁换乘查询</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="logo">🚇</div>
+  <div>
+    <h1>方域大陆 Leon's <span style="font-weight:400;opacity:.85">地铁换乘查询</span></h1>
+    <div class="sub">FANGYU CONTINENT · METRO TRANSFER</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="hint">左侧输入站点，或直接在地图上点击站点选择起终点</div>
+</header>
+
+<div class="app-body">
+  <!-- ============ 左侧：查询 + 结果 ============ -->
+  <aside class="sidebar">
+    <div class="controls">
+      <div class="od-wrap">
+        <div class="od-fields">
+          <div class="station-field origin">
+            <span class="dot"></span>
+            <input id="origin-input" type="text" placeholder="起点站，如：碉堡城区" autocomplete="off" spellcheck="false">
+            <button class="clear" type="button" title="清除">✕</button>
+            <div class="ac-list" id="origin-ac" hidden></div>
+          </div>
+          <div class="station-field dest">
+            <span class="dot"></span>
+            <input id="dest-input" type="text" placeholder="终点站，如：欧城欧堡" autocomplete="off" spellcheck="false">
+            <button class="clear" type="button" title="清除">✕</button>
+            <div class="ac-list" id="dest-ac" hidden></div>
+          </div>
+        </div>
+        <button id="swap-btn" class="swap-btn" type="button" title="交换起点与终点">⇅</button>
+      </div>
+
+      <div class="prefs">
+        <span class="label">出行偏好</span>
+        <div class="seg">
+          <button type="button" data-pref="recommend" class="active">推荐</button>
+          <button type="button" data-pref="transfer">少换乘</button>
+          <button type="button" data-pref="stops">少站点</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result" id="result"></div>
+  </aside>
+
+  <!-- ============ 右侧：地铁图 ============ -->
+  <main class="map-wrap">
+    <div id="map-container">
+<!-- ==================== 地铁图 SVG（如需更新地图，替换下面这段 <svg> 即可；通过本地服务器打开时会自动读取同目录下的 .svg 源文件） ==================== -->
+<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 2600.07 1963.91" style="enable-background:new 0 0 2600.07 1963.91;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;}
+	.st1{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:4.8636,2.9181;}
+	.st2{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:5.2654,3.1593;}
+	.st3{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:5.2025,5.2025;}
+	.st4{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:5.2022,5.2022;}
+	.st5{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:4.8153,4.8153;}
+	.st6{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:9.2192,9.2192;}
+	.st7{fill:none;stroke:#616161;stroke-width:5;stroke-miterlimit:10;stroke-dasharray:5,5;}
+	.st8{fill:none;stroke:#0044E3;stroke-width:10;stroke-miterlimit:10;}
+	.st9{fill:#FFFFFF;}
+	.st10{fill:#FFFFFF;stroke:#0044E3;stroke-width:5;stroke-miterlimit:10;}
+	.st11{fill:none;stroke:#FFB00A;stroke-width:10;stroke-miterlimit:10;}
+	.st12{fill:#FFFFFF;stroke:#FFB00A;stroke-width:5;stroke-miterlimit:10;}
+	.st13{fill:none;stroke:#A8A5A5;stroke-width:10;stroke-miterlimit:10;}
+	.st14{fill:#FFFFFF;stroke:#A8A5A5;stroke-width:5;stroke-miterlimit:10;}
+	.st15{fill:none;stroke:#00ACFF;stroke-width:10;stroke-miterlimit:10;}
+	.st16{fill:#FFFFFF;stroke:#00ACFF;stroke-width:5;stroke-miterlimit:10;}
+	.st17{fill:#FFFFFF;stroke:#999999;stroke-width:5;stroke-miterlimit:10;}
+	.st18{fill:none;stroke:#565656;stroke-width:10;stroke-miterlimit:10;}
+	.st19{fill:#FFFFFF;stroke:#565656;stroke-width:5;stroke-miterlimit:10;}
+	.st20{fill:none;stroke:#97D700;stroke-width:10;stroke-miterlimit:10;}
+	.st21{fill:#FFFFFF;stroke:#97D700;stroke-width:5;stroke-miterlimit:10;}
+	.st22{fill:none;stroke:#C5003E;stroke-width:10;stroke-miterlimit:10;}
+	.st23{fill:#FFFFFF;stroke:#C5003E;stroke-width:5;stroke-miterlimit:10;}
+	.st24{fill:none;stroke:#00843D;stroke-width:10;stroke-miterlimit:10;}
+	.st25{fill:#FFFFFF;stroke:#00843D;stroke-width:5;stroke-miterlimit:10;}
+	.st26{fill:none;stroke:#80225F;stroke-width:10;stroke-miterlimit:10;}
+	.st27{fill:#FFFFFF;stroke:#80225F;stroke-width:5;stroke-miterlimit:10;}
+	.st28{fill:#545454;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st29{font-family:'AlibabaPuHuiTi-Medium';}
+	.st30{font-size:30px;}
+	.st31{fill:#383838;}
+	.st32{font-family:'MiSans-Semibold';}
+	.st33{font-size:127.8483px;}
+	.st34{font-size:48px;}
+	.st35{fill:#80225F;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st36{font-size:23.1214px;}
+	.st37{font-family:'MiSans-Heavy';}
+	.st38{font-size:57.9056px;}
+	.st39{font-size:17.5886px;}
+	.st40{fill:#0044E3;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st41{fill:#00843D;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st42{fill:#C5003E;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st43{fill:#97D700;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st44{fill:#565656;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st45{font-size:52.1244px;}
+	.st46{font-size:24px;}
+	.st47{fill:#A8A5A5;stroke:#737373;stroke-width:3;stroke-miterlimit:10;}
+	.st48{fill:#FAFAFA;}
+	.st49{font-size:30.7912px;}
+	.st50{font-size:14.0653px;}
+	.st51{font-size:33.1585px;}
+	.st52{fill:#00ACFF;stroke:#737373;stroke-width:3;stroke-miterlimit:10;}
+	.st53{font-size:25.236px;}
+	.st54{fill:#FFB00A;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}
+	.st55{fill:#0044E3;stroke:#383838;stroke-width:3;stroke-miterlimit:10;}
+	.st56{font-size:20.4025px;}
+	.st57{font-size:14.1132px;}
+	.st58{fill:#BFBFBF;stroke:#383838;stroke-width:3;stroke-miterlimit:10;}
+	.st59{fill:none;stroke:#404040;stroke-width:5;stroke-miterlimit:10;}
+	.st60{fill:none;stroke:#E6E6E6;stroke-miterlimit:10;}
+	.st61{fill:none;stroke:#404040;stroke-width:4;stroke-miterlimit:10;}
+	.st62{fill:none;stroke:#404040;stroke-miterlimit:10;}
+</style>
+<g id="虚拟换乘">
+	<path class="st1" data-line-type="transfer" data-line-change="S009,S022" d="M826.66,1676.49l3.85,3.49c11.08,10.02,11.32,25.98,0.55,36.26l-4.98,4.75"/>
+	<path class="st2" data-line-type="transfer" data-line-change="S021,S017" d="M818.53,1526l-3.56,2.53c-12.16,8.62-28.2,9.49-41.21,2.22l-8.29-4.63"/>
+	<path class="st3" data-line-type="transfer" data-line-change="S011,S026" d="M1147.15,1424.9l3.6,1.62c21.45,9.65,45.79,10.64,67.95,2.76l16.41-5.83"/>
+	<path class="st4" data-line-type="transfer" data-line-change="S016,S019" d="M843.41,654.88l5.79,8.22c9.12,12.95,9.31,30.18,0.49,43.33l-7.87,11.72"/>
+	<path class="st5" data-line-type="transfer" data-line-change="S015,S004" d="M1440.5,379.93c3.56,25.88,25.76,45.81,52.61,45.81h17.81"/>
+	<path class="st6" data-line-type="transfer" data-line-change="S001,S004" d="M1528.15,432.84l15.97,9.2c17.71,10.21,39.54,10.15,57.19-0.16l23.91-13.95"/>
+	<path class="st7" data-line-type="transfer" data-line-change="S006,S012" d="M2239.18,425.74l22.2,12.08c8.55,4.65,18.86,4.73,27.48,0.19l23.32-12.27"/>
+	<path class="st7" data-line-type="transfer" data-line-change="S003,S005" d="M2039.74,473.28l-11.29,8.83c-10.3,8.05-10.62,23.52-0.67,32l11.96,10.19"/>
+</g>
+<g id="耀青公交1线">
+	<g data-line-type="metro" data-line="耀青公交1线" data-connet="S002,S001">
+		<line class="st8" x1="1633.53" y1="300.77" x2="1633.53" y2="423.1"/>
+		<path class="st9" d="M1634.03,405.84h-1V391.2h1V405.84z M1634.03,381.45h-1v-14.64h1V381.45z M1634.03,357.05h-1v-14.64h1V357.05
+			z M1634.03,332.66h-1v-14.64h1V332.66z"/>
+	</g>
+	<g data-line-type="metro" data-line="耀青公交1线" data-connet="S001,S003">
+		<path class="st8" d="M1633.53,423.1h379.68c14.66,0,26.54,11.88,26.54,26.54v23.65"/>
+		<path class="st9" d="M2040.24,455.87h-1v-6.24c0-2.83-0.45-5.62-1.34-8.28l0.95-0.32c0.93,2.76,1.4,5.66,1.4,8.6V455.87z
+			 M2033.19,432.94c-3.14-3.76-7.25-6.55-11.88-8.06l0.31-0.95c4.81,1.57,9.08,4.47,12.34,8.37L2033.19,432.94z M2011.72,423.6
+			h-14.83v-1h14.83V423.6z M1987.01,423.6h-14.83v-1h14.83V423.6z M1962.3,423.6h-14.83v-1h14.83V423.6z M1937.58,423.6h-14.83v-1
+			h14.83V423.6z M1912.87,423.6h-14.83v-1h14.83V423.6z M1888.16,423.6h-14.83v-1h14.83V423.6z M1863.44,423.6h-14.83v-1h14.83
+			V423.6z M1838.73,423.6h-14.83v-1h14.83V423.6z M1814.02,423.6h-14.83v-1h14.83V423.6z M1789.3,423.6h-14.83v-1h14.83V423.6z
+			 M1764.59,423.6h-14.83v-1h14.83V423.6z M1739.88,423.6h-14.83v-1h14.83V423.6z M1715.16,423.6h-14.83v-1h14.83V423.6z
+			 M1690.45,423.6h-14.83v-1h14.83V423.6z M1665.74,423.6h-14.83v-1h14.83V423.6z"/>
+	</g>
+	<circle id="雷拓城_仅上乘_" class="st10" cx="1633.53" cy="423.1" r="9.7" data-station-name="雷拓城_公交站_" data-station-id="S001" data-station-line="耀青公交1线"/>
+	<circle id="耀青殿北" class="st10" cx="1633.53" cy="298.53" r="9.7" data-station-name="耀青殿北" data-station-id="S002" data-station-line="耀青公交1线"/>
+	<circle id="竹泉镇" class="st10" cx="2039.74" cy="473.28" r="9.7" data-station-name="竹泉镇" data-station-id="S003" data-station-line="耀青公交1线"/>
+</g>
+<g id="耀青环中心城区线">
+	<path data-line-type="metro" data-line="耀青环中心城区线" data-connet="S005,S006" class="st11" d="M2039.74,524.3l167.39-2.89c17.78-0.31,32.04-14.81,32.04-32.6v-63.06"/>
+	<path data-line-type="metro" data-line="耀青环中心城区线" data-connet="S004,S005" class="st11" d="M1515.83,419.74v70.66c0,18.72,15.17,33.89,33.89,33.89h490.02"/>
+	<path data-line-type="metro" data-line="耀青环中心城区线" data-connet="S004,S008" class="st11" d="M1636.09,224.43h-84.26c-19.88,0-36,16.12-36,36v165.32"/>
+	<path data-line-type="metro" data-line="耀青环中心城区线" data-connet="S007,S006" class="st11" d="M2239.18,425.74V258.65c0-18.9-15.32-34.23-34.23-34.23h-264.78"/>
+	<line data-line-type="metro" data-line="耀青环中心城区线" data-connet="S007,S008" class="st11" x1="1940.17" y1="224.43" x2="1639.15" y2="224.43"/>
+	<circle id="雷拓城" class="st12" cx="1515.83" cy="425.74" r="9.7" data-station-name="雷拓城" data-station-id="S004" data-station-line="耀青环中心城区线"/>
+	<circle id="枯坑矿井北" class="st12" cx="2039.74" cy="524.3" r="9.7" data-station-name="枯坑矿井北" data-station-id="S005" data-station-line="耀青环中心城区线"/>
+	<circle id="竹泉镇东" class="st12" cx="2239.18" cy="425.74" r="9.7" data-station-name="竹泉镇东" data-station-id="S006" data-station-line="耀青环中心城区线"/>
+	<circle id="城市信标中心" class="st12" cx="1940.17" cy="224.43" r="9.7" data-station-name="城市信标中心" data-station-id="S007" data-station-line="耀青环中心城区线"/>
+	<circle id="海洋高邸南" class="st12" cx="1639.15" cy="224.43" r="9.7" data-station-name="海洋高邸南" data-station-id="S008" data-station-line="耀青环中心城区线"/>
+</g>
+<g id="远洋南大陆西线">
+	<g data-line-type="metro" data-line="远洋南大陆西线" data-connet="S009,S010">
+		<path class="st13" d="M823.15,1723.72H658.77c-11.39,0-22.4,4.11-31,11.57l-85.14,73.83c-8.61,7.46-19.61,11.57-31,11.57H340.09"/>
+		<path class="st9" d="M488.87,1825.28h-15.66v-10h15.66V1825.28z M441.88,1825.28h-15.66v-10h15.66V1825.28z M394.9,1825.28h-15.66
+			v-10h15.66V1825.28z M521.02,1824.49l-1.74-9.85c4.62-0.82,9.04-2.38,13.14-4.66l4.84,8.75
+			C532.2,1821.54,526.73,1823.48,521.02,1824.49z M562.41,1798.43l-6.55-7.55l11.83-10.26l6.55,7.55L562.41,1798.43z
+			 M597.91,1767.65l-6.55-7.55l11.83-10.26l6.55,7.55L597.91,1767.65z M633.24,1737.12l-6.1-7.92c4.59-3.54,9.71-6.27,15.2-8.13
+			l3.2,9.47C641.09,1732.04,636.95,1734.25,633.24,1737.12z M784.62,1728.32h-15.66v-10h15.66V1728.32z M737.64,1728.32h-15.66v-10
+			h15.66V1728.32z M690.65,1728.32h-15.66v-10h15.66V1728.32z"/>
+	</g>
+	<circle id="碉堡城缘海" class="st14" cx="823.15" cy="1723.72" r="9.7" data-station-name="碉堡城缘海" data-station-id="S009" data-station-line="远洋南大陆西线"/>
+	<circle id="远洋地" class="st14" cx="340.09" cy="1822.28" r="9.7" data-station-name="远洋地" data-station-id="S010" data-station-line="远洋南大陆西线"/>
+</g>
+<g id="耀青市域轻轨东线">
+	<g data-line-type="metro" data-line="耀青市域轻轨东线" data-connet="S011,S012">
+		<path class="st15" d="M1239.92,1421.74h237.12c34.82,0,63.04-28.23,63.04-63.04V986.79c0-34.82,28.23-63.04,63.04-63.04h482.9
+			c16.64,0,32.6-6.58,44.41-18.29l163.1-161.85c11.93-11.84,18.64-27.95,18.64-44.75V425.74"/>
+		<path class="st9" d="M1472.64,1426.74h-15.02v-10h15.02V1426.74z M1427.6,1426.74h-15.01v-10h15.01V1426.74z M1382.55,1426.74
+			h-15.01v-10h15.01V1426.74z M1337.51,1426.74h-15.01v-10h15.01V1426.74z M1292.46,1426.74h-15.01v-10h15.01V1426.74z
+			 M1503.94,1421.22l-3.96-9.18c4.22-1.82,8.24-4.15,11.92-6.93l6.01,7.99C1513.6,1416.35,1508.9,1419.08,1503.94,1421.22z
+			 M1538.32,1388.32l-9-4.36c2.01-4.14,3.51-8.53,4.48-13.03l9.78,2.1C1542.44,1378.31,1540.67,1383.45,1538.32,1388.32z
+			 M1545.09,1342.05h-10v-15.02h10V1342.05z M1545.09,1297.01h-10v-15.01h10V1297.01z M1545.09,1251.96h-10v-15.01h10V1251.96z
+			 M1545.09,1206.92h-10v-15.02h10V1206.92z M1545.09,1161.87h-10v-15.01h10V1161.87z M1545.09,1116.83h-10v-15.01h10V1116.83z
+			 M1545.09,1071.78h-10v-15.01h10V1071.78z M1545.09,1026.74h-10v-15.01h10V1026.74z M1545.27,982.1l-9.97-0.8
+			c0.43-5.4,1.51-10.73,3.19-15.85l9.5,3.13C1546.56,972.95,1545.64,977.5,1545.27,982.1z M1562.48,945.35l-7-7.14
+			c3.86-3.78,8.16-7.11,12.79-9.87l5.13,8.58C1569.44,939.29,1565.77,942.12,1562.48,945.35z M1599.54,928.85l-0.61-9.98
+			c1.39-0.08,2.8-0.13,4.19-0.13h11.12v10h-11.12C1601.94,928.74,1600.73,928.78,1599.54,928.85z M2064.7,928.74h-15.01v-10h15.01
+			V928.74z M2019.65,928.74h-15.01v-10h15.01V928.74z M1974.61,928.74h-15.02v-10h15.02V928.74z M1929.56,928.74h-15.01v-10h15.01
+			V928.74z M1884.52,928.74h-15.01v-10h15.01V928.74z M1839.47,928.74h-15.01v-10h15.01V928.74z M1794.43,928.74h-15.01v-10h15.01
+			V928.74z M1749.39,928.74h-15.01v-10h15.01V928.74z M1704.34,928.74h-15.01v-10h15.01V928.74z M1659.3,928.74h-15.01v-10h15.01
+			V928.74z M2095.39,928.1l-1.38-9.91c4.56-0.63,9.05-1.81,13.34-3.51l3.67,9.3C2106,925.97,2100.74,927.36,2095.39,928.1z
+			 M2137.13,905.85l-7.04-7.1l10.66-10.58l7.04,7.1L2137.13,905.85z M2169.1,874.12l-7.04-7.1l10.66-10.58l7.04,7.1L2169.1,874.12z
+			 M2201.08,842.4l-7.04-7.1l10.66-10.58l7.04,7.1L2201.08,842.4z M2233.05,810.67l-7.04-7.1l10.66-10.58l7.04,7.1L2233.05,810.67z
+			 M2265.02,778.94l-7.04-7.1l10.66-10.58l7.04,7.1L2265.02,778.94z M2297.06,747.15l-7.12-7.02l0.06-0.06
+			c3.27-3.24,6.13-6.85,8.54-10.75l8.51,5.25C2304.23,739.13,2300.87,743.37,2297.06,747.15z M2316.97,704.03l-9.97-0.76
+			c0.11-1.47,0.17-2.95,0.17-4.42v-10.21h10v10.21C2317.17,700.57,2317.1,702.31,2316.97,704.03z M2317.17,658.61h-10v-15.01h10
+			V658.61z M2317.17,613.56h-10v-15.01h10V613.56z M2317.17,568.52h-10V553.5h10V568.52z M2317.17,523.48h-10v-15.02h10V523.48z
+			 M2317.17,478.43h-10v-15.01h10V478.43z"/>
+	</g>
+	<g data-line-type="metro" data-line="耀青市域轻轨东线" data-connet="S012,S013">
+		<path class="st15" d="M2312.17,423.15V265.57c0-22.73,18.42-41.15,41.15-41.15H2398c22.73,0,41.15-18.42,41.15-41.15v-59.36"/>
+		<path class="st9" d="M2317.17,386.74h-10v-14.46h10V386.74z M2317.17,343.37h-10v-14.46h10V343.37z M2317.17,300h-10v-14.46h10
+			V300z M2318.01,257.78l-9.77-2.14c1.17-5.3,3.24-10.32,6.18-14.91l8.42,5.39C2320.55,249.71,2318.92,253.63,2318.01,257.78z
+			 M2342.63,231.03l-2.95-9.55c4.4-1.36,8.99-2.05,13.64-2.05h2.11v10h-2.11C2349.67,229.43,2346.08,229.97,2342.63,231.03z
+			 M2398,229.43h-13.66v-10H2398c0.23,0,0.47,0,0.7-0.01l0.19,10C2398.59,229.42,2398.3,229.43,2398,229.43z M2428.49,217.92
+			l-6.61-7.5c3.2-2.82,5.86-6.14,7.89-9.87l8.78,4.79C2435.95,210.09,2432.57,214.33,2428.49,217.92z M2444.15,174.87h-10v-14.46h10
+			V174.87z"/>
+	</g>
+	<circle id="碉堡城南" class="st16" cx="1239.92" cy="1421.74" r="9.7" data-station-name="碉堡城南" data-station-id="S011" data-station-line="耀青市域轻轨东线"/>
+	<circle id="竹泉镇东_轻轨_" class="st16" cx="2312.17" cy="425.74" r="9.7" data-station-name="竹泉镇东_轻轨站_" data-station-id="S012" data-station-line="耀青市域轻轨东线"/>
+	<circle id="欧城欧堡" class="st16" cx="2439.15" cy="123.91" r="9.7" data-station-name="欧城欧堡" data-station-id="S013" data-station-line="耀青市域轻轨东线"/>
+</g>
+<g id="耀青市域轻轨西线">
+	<g data-line-type="metro" data-line="耀青市域轻轨西线" data-connet="S014,S027">
+		<path class="st15" d="M1165.79,424.34v-60.89c0-21.79-17.66-39.45-39.45-39.45H973.15c-21.79,0-39.45-17.66-39.45-39.45v-60.13"/>
+		<path class="st9" d="M1170.79,387.37h-10v-14.73h10V387.37z M1156.35,346.51c-2.12-3.76-4.9-7.05-8.26-9.78l6.32-7.75
+			c4.32,3.52,7.9,7.76,10.64,12.61L1156.35,346.51z M1123.84,329h-14.74v-10h14.74V329z M1079.64,329h-14.73v-10h14.73V329z
+			 M1035.43,329h-14.73v-10h14.73V329z M991.23,329h-14.73v-10h14.73V329z M945.82,319.61c-4.39-3.43-8.06-7.59-10.91-12.38
+			l8.6-5.11c2.21,3.71,5.05,6.94,8.46,9.6L945.82,319.61z M938.7,276.21h-10v-14.73h10V276.21z"/>
+	</g>
+	<g data-line-type="metro" data-line="耀青市域轻轨西线" data-connet="S014,S015">
+		<path class="st15" d="M931.06,224.43h469.74c21.64,0,39.19,17.55,39.19,39.19v109.02"/>
+		<path class="st9" d="M1445,334.59h-10v-15.25h10V334.59z M1445,288.84h-10v-15.25h10V288.84z M1430.43,246.52
+			c-2.24-3.87-5.17-7.22-8.71-9.96l6.12-7.91c4.57,3.54,8.35,7.86,11.24,12.86L1430.43,246.52z M1396.11,229.43h-15.25v-10h15.25
+			V229.43z M1350.35,229.43h-15.25v-10h15.25V229.43z M1304.6,229.43h-15.25v-10h15.25V229.43z M1258.84,229.43h-15.25v-10h15.25
+			V229.43z M1213.09,229.43h-15.25v-10h15.25V229.43z M1167.34,229.43h-15.25v-10h15.25V229.43z M1121.58,229.43h-15.25v-10h15.25
+			V229.43z M1075.83,229.43h-15.25v-10h15.25V229.43z M1030.07,229.43h-15.25v-10h15.25V229.43z M984.32,229.43h-15.25v-10h15.25
+			V229.43z"/>
+	</g>
+	<circle id="耀青殿站" class="st16" cx="933.7" cy="224.43" r="9.7" data-station-name="耀青殿站" data-station-id="S014" data-station-line="耀青市域轻轨西线"/>
+	<circle id="雷拓城站" class="st16" cx="1440" cy="372.64" r="9.7" data-station-name="雷拓城站" data-station-id="S015" data-station-line="耀青市域轻轨西线"/>
+</g>
+<g id="碉堡耀青城际">
+	<g data-line-type="metro" data-line="碉堡耀青城际" data-connet="S027,S016">
+		<path class="st13" d="M838.98,648.58V461.87c0-20.73,16.8-37.53,37.53-37.53h264.26"/>
+		<path class="st9" d="M843.98,610.15h-10v-15.47h10V610.15z M843.98,563.75h-10v-15.47h10V563.75z M843.98,517.35h-10v-15.47h10
+			V517.35z M843.98,470.96h-10v-9.08c0-2.41,0.2-4.83,0.61-7.19l9.86,1.68c-0.31,1.81-0.46,3.66-0.46,5.51V470.96z M858.76,434.6
+			l-5.46-8.38c4.95-3.23,10.4-5.35,16.22-6.31l1.63,9.87C866.71,430.51,862.54,432.14,858.76,434.6z M1102.29,429.34h-15.47v-10
+			h15.47V429.34z M1055.9,429.34h-15.47v-10h15.47V429.34z M1009.5,429.34h-15.47v-10h15.47V429.34z M963.1,429.34h-15.47v-10h15.47
+			V429.34z M916.71,429.34h-15.47v-10h15.47V429.34z"/>
+	</g>
+	<circle id="碉堡城轨站" class="st14" cx="838.98" cy="648.58" r="9.7" data-station-name="碉堡城轨站" data-station-id="S016" data-station-line="碉堡耀青城际"/>
+	<path id="耀青殿" class="st17" data-station-name="耀青殿" data-station-id="S027" data-station-line="碉堡耀青城际,耀青市域轻轨西线" d="M1171.6,437.34h-31.54c-7.18,0-13-5.82-13-13v0c0-7.18,5.82-13,13-13h31.54
+		c7.18,0,13,5.82,13,13v0C1184.6,431.52,1178.78,437.34,1171.6,437.34z"/>
+</g>
+<g id="便捷云巴">
+	<g data-line-type="metro" data-line="便捷云巴" data-connet="S017,S018">
+		<line class="st18" x1="761.9" y1="1524.13" x2="661.02" y2="1422.89"/>
+		<path class="st9" d="M750.5,1513.4l-7.17-7.19l0.71-0.71l-0.65,0.66l0.65-0.65l7.16,7.19L750.5,1513.4z M736.18,1499.03
+			L736.18,1499.03l0.35-0.36L736.18,1499.03l-7.17-7.2l0.48-0.48l-0.49,0.47l-0.01-0.01l0.73-0.69l7.16,7.19L736.18,1499.03z
+			 M721.87,1484.67L721.87,1484.67l0.33-0.37l-0.35,0.35l-7.16-7.19l0.67-0.74l-0.35,0.42l0.39-0.39l7.16,7.19L721.87,1484.67z
+			 M707.53,1470.28L707.53,1470.28l0.35-0.36L707.53,1470.28l-7.17-7.2l0.48-0.48l-0.49,0.47l-0.01-0.01l0.73-0.69l7.16,7.19
+			L707.53,1470.28z M693.2,1455.89l-7.16-7.19l0.48-0.48l-0.49,0.47l-0.01-0.01l0.73-0.69l7.16,7.19l-0.35,0.35l0.37-0.34
+			L693.2,1455.89z M678.91,1441.55L678.91,1441.55l0.32-0.39l-0.35,0.35l-7.16-7.19l0.48-0.48l-0.49,0.47l-0.01-0.01l0.73-0.69
+			l7.16,7.19L678.91,1441.55z M664.54,1427.14L664.54,1427.14l0.73-0.69L664.54,1427.14z"/>
+	</g>
+	<circle id="主城湖畔_云巴_" class="st19" cx="761.9" cy="1524.13" r="9.7" data-station-name="主城湖畔_云巴_" data-station-id="S017" data-station-line="便捷云巴"/>
+	<circle id="孤珀云宅" class="st19" cx="660.67" cy="1422.54" r="9.7" data-station-name="孤珀云宅" data-station-id="S018" data-station-line="便捷云巴"/>
+</g>
+<g id="碉堡5号线">
+	<line data-line-type="metro" class="st20" data-line="碉堡5号线" data-connet="S028,S019" x1="838.98" y1="1017.96" x2="838.98" y2="723.83"/>
+	<line data-line-type="metro" class="st20" data-line="碉堡5号线" data-connet="S019,S020" x1="836.17" y1="723.83" x2="441.19" y2="723.83"/>
+	<circle id="碉堡城轨" class="st21" cx="838.98" cy="723.83" r="9.7" data-station-name="碉堡城轨" data-station-id="S019" data-station-line="碉堡5号线"/>
+	<circle id="先遣圣洁基地" class="st21" cx="441.19" cy="723.83" r="9.7" data-station-name="先遣圣洁基地" data-station-id="S020" data-station-line="碉堡5号线"/>
+</g>
+<g id="碉堡4号线">
+	<line data-line-type="metro" class="st22" data-line="碉堡4号线" data-connet="S029,S021" x1="823.15" y1="1240.85" x2="823.15" y2="1522.72"/>
+	<line data-line-type="metro" class="st22" data-line="碉堡4号线" data-connet="S021,S022" x1="822.64" y1="1517.11" x2="822.64" y2="1672.85"/>
+	<circle id="主城湖畔" class="st23" cx="823.15" cy="1522.72" r="9.7" data-station-name="主城湖畔" data-station-id="S021" data-station-line="碉堡4号线"/>
+	<circle id="城缘海" class="st23" cx="822.64" cy="1672.85" r="9.7" data-station-name="城缘海" data-station-id="S022" data-station-line="碉堡4号线"/>
+</g>
+<g id="碉堡3号线支线">
+	<path data-line-type="metro" data-line="碉堡3号线支线" data-connet="S028,S023" class="st24" d="M814.98,1022.81v-61.4c0-20.8-16.86-37.66-37.66-37.66h-186"/>
+	<circle id="天空流星之塔" class="st25" cx="591.32" cy="923.74" r="9.7" data-station-name="天空流星之塔" data-station-id="S023" data-station-line="碉堡3号线支线"/>
+</g>
+<g id="碉堡3号线">
+	<line data-line-type="metro" data-line="碉堡3号线" data-connet="S029,S028" class="st24" x1="838.98" y1="1023.61" x2="838.98" y2="1213.28"/>
+	<line data-line-type="metro" data-line="碉堡3号线" data-connet="S028,S024" class="st24" x1="1184.17" y1="1023.38" x2="837.83" y2="1023.38"/>
+	<circle id="流萤广场" class="st25" cx="1184.17" cy="1022.81" r="9.7" data-station-name="流萤广场" data-station-id="S024" data-station-line="碉堡3号线"/>
+	<path id="老坑站" data-station-name="老坑站" data-station-id="S028" data-station-line="碉堡3号线,碉堡3号线支线" class="st17" d="M845.9,1036.38h-31.54c-7.18,0-13-5.82-13-13v0c0-7.18,5.82-13,13-13h31.54
+		c7.18,0,13,5.82,13,13v0C858.89,1030.56,853.07,1036.38,845.9,1036.38z"/>
+</g>
+<g id="碉堡2号线">
+	<path data-line-type="metro" data-line="碉堡2号线" data-connet="S025,S029" class="st8" d="M823.15,1213.28H333.96c-16.36,0-29.62-13.26-29.62-29.62v-157.28"/>
+	<circle id="试炼之地" class="st10" cx="304.34" cy="1023.61" r="9.7" data-station-name="试炼之地" data-station-id="S025" data-station-line="碉堡2号线"/>
+</g>
+<g id="碉堡1号线">
+	<path data-line-type="metro" data-line="碉堡1号线" data-connet="S029,S026" class="st26" d="M838.98,1240.85v156.51c0,15.09,12.23,27.32,27.32,27.32h274.47"/>
+	<path data-line-type="metro" id="碉堡城区" class="st17" data-station-name="碉堡城区" data-station-id="S029" data-station-line="碉堡1号线,碉堡2号线,碉堡3号线,碉堡4号线" d="M839.49,1254.81h-18.38c-6.77,0-12.26-5.49-12.26-12.26v-29.62
+		c0-6.77,5.49-12.26,12.26-12.26h18.38c6.77,0,12.26,5.49,12.26,12.26v29.62C851.74,1249.32,846.26,1254.81,839.49,1254.81z"/>
+	<circle id="地狱入口" class="st27" cx="1140.13" cy="1421.74" r="9.7" data-station-name="地狱入口" data-station-id="S026" data-station-line="碉堡1号线"/>
+</g>
+<g id="字例">
+	<text transform="matrix(1 0 0 1 230.3033 1831.9867)" class="st28 st29 st30">远洋地</text>
+	<text transform="matrix(1 0 0 1 851.7446 1737.1149)" class="st28 st29 st30">碉堡城缘海</text>
+	<text transform="matrix(1 0 0 1 714.6885 1680.8225)" class="st28 st29 st30">城缘海</text>
+	<text transform="matrix(1 0 0 1 693.9207 1569.525)" class="st28 st29 st30">主城湖畔</text>
+	<text transform="matrix(1 0 0 1 519.2842 1432.2428)" class="st28 st29 st30">孤珀云宅</text>
+	<text transform="matrix(1 0 0 1 245.6937 1002.4547)" class="st28 st29 st30">试炼之地</text>
+	<text transform="matrix(1 0 0 1 858.8937 1236.947)" class="st28 st29 st30">碉堡城区</text>
+	<text transform="matrix(1 0 0 1 1080.4637 1385.1686)" class="st28 st29 st30">地狱入口</text>
+	<text transform="matrix(1 0 0 1 1184.1704 1473.511)" class="st28 st29 st30">碉堡城南</text>
+	<text transform="matrix(1 0 0 1 700.2693 1032.5106)" class="st28 st29 st30">老坑站</text>
+	<text transform="matrix(1 0 0 1 258.353 933.4469)" class="st28 st29 st30">天空流星之塔（天空塔）</text>
+	<text transform="matrix(1 0 0 1 1206.5138 1032.9302)" class="st28 st29 st30">流萤广场</text>
+	<text transform="matrix(1 0 0 1 866.9454 735.6917)" class="st28 st29 st30">碉堡城轨</text>
+	<text transform="matrix(1 0 0 1 867.5753 658.2807)" class="st28 st29 st30">碉堡城轨站</text>
+	<text transform="matrix(1 0 0 1 75.8805 734.4822)" class="st28 st29 st30">先遣圣洁基地（先洁基地）</text>
+	<text transform="matrix(1 0 0 1 1199.667 437.3385)" class="st28 st29 st30">耀青殿</text>
+	<text transform="matrix(1 0 0 1 788.9689 234.1275)" class="st28 st29 st30">耀青殿站</text>
+	<text transform="matrix(1 0 0 1 1299.5721 382.3385)" class="st28 st29 st30">雷拓城站</text>
+	<text transform="matrix(1 0 0 1 1410.7515 463.5827)" class="st28 st29 st30">雷拓城</text>
+	<text transform="matrix(1 0 0 1 1623.8226 469.5351)" class="st28 st29 st30">雷拓城(仅上乘)</text>
+	<text transform="matrix(1 0 0 1 1658.3243 308.2329)" class="st28 st29 st30">耀青殿北</text>
+	<text transform="matrix(1 0 0 1 1564.4359 201.7161)" class="st28 st29 st30">海洋高邸南</text>
+	<text transform="matrix(1 0 0 1 1856.0293 201.7163)" class="st28 st29 st30">城市信标中心</text>
+	<text transform="matrix(1 0 0 1 2063.0762 482.9867)" class="st28 st29 st30">竹泉镇</text>
+	<text transform="matrix(1 0 0 1 1959.5925 575.5967)" class="st28 st29 st30">枯坑矿井北</text>
+	<text transform="matrix(1 0 0 1 2107.1357 405.839)" class="st28 st29 st30">竹泉镇东</text>
+	<text transform="matrix(1 0 0 1 2339.6809 433.5566)" class="st28 st29 st30">竹泉镇东</text>
+	<text transform="matrix(1 0 0 1 2375.6597 101.849)" class="st28 st29 st30">欧城欧堡</text>
+	<text transform="matrix(1 0 0 1 1181.3702 1636.6489)" class="st31 st32 st33">方域大陆Leon's运营图</text>
+	<text transform="matrix(1 0 0 1 1309.4663 1730.0236)" class="st31 st32 st34">线路线号</text>
+	<text transform="matrix(1 0 0 1 1310.0105 1811.9534)" class="st31 st32 st34">线路站点</text>
+	<text transform="matrix(1 0 0 1 1311.01 1888.3794)" class="st31 st32 st34">站内换乘</text>
+	<text transform="matrix(1 0 0 1 1987.9569 1727.619)" class="st31 st32 st34">站外换乘</text>
+	<text transform="matrix(1 0 0 1 1844.2423 1815.2125)" class="st31 st32 st34">可换乘下界高速</text>
+</g>
+<g id="图例">
+	<g id="碉堡1号线_图例_">
+		<path class="st35" d="M1152.31,1514.19H1014.8c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19V1496C1170.5,1506.04,1162.35,1514.19,1152.31,1514.19z"/>
+		<text transform="matrix(1 0 0 1 1044.2252 1474.3428)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 1008.3692 1502.0879)" class="st9 st37 st38">1</text>
+		<text transform="matrix(1 0 0 1 1092.4073 1476.3945)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 1</tspan></text>
+	</g>
+	<g id="碉堡2号线_图例_">
+		<path class="st40" d="M250.56,1240.41H113.04c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C268.74,1232.27,260.6,1240.41,250.56,1240.41z"/>
+		<text transform="matrix(1 0 0 1 142.4725 1200.5684)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 103.6166 1228.3135)" class="st9 st37 st38">2</text>
+		<text transform="matrix(1 0 0 1 190.6547 1202.6201)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 2</tspan></text>
+	</g>
+	<g id="碉堡3号线_图例_">
+		<path class="st41" d="M1024.71,1171.45H887.2c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C1042.9,1163.3,1034.75,1171.45,1024.71,1171.45z"/>
+		<text transform="matrix(1 0 0 1 916.6243 1131.6035)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 877.7683 1159.3486)" class="st9 st37 st38">3</text>
+		<text transform="matrix(1 0 0 1 964.8064 1133.6553)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 3</tspan></text>
+	</g>
+	<g id="碉堡3号线支线_图例_">
+		<path class="st41" d="M808.54,895.24H596.5c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h212.03
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C826.72,887.1,818.58,895.24,808.54,895.24z"/>
+		<text transform="matrix(1 0 0 1 624.9294 855.4017)"><tspan x="0" y="0" class="st9 st29 st36">    碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">支号线</tspan></text>
+		<text transform="matrix(1 0 0 1 587.0734 883.1469)" class="st9 st37 st38">3</text>
+		<text transform="matrix(1 0 0 1 699.1115 857.4535)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 3 Branch</tspan></text>
+	</g>
+	<g id="碉堡4号线_图例_">
+		<path class="st42" d="M683.98,1660.85H546.47c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C702.16,1652.71,694.02,1660.85,683.98,1660.85z"/>
+		<text transform="matrix(1 0 0 1 575.8932 1621.0098)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 535.0372 1648.7549)" class="st9 st37 st38">4</text>
+		<text transform="matrix(1 0 0 1 624.0753 1623.0615)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 4</tspan></text>
+	</g>
+	<g id="碉堡5号线_图例_">
+		<path class="st43" d="M606.59,705.86H469.08c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C624.78,697.72,616.64,705.86,606.59,705.86z"/>
+		<text transform="matrix(1 0 0 1 498.5086 666.02)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 459.6526 693.7651)" class="st9 st37 st38">5</text>
+		<text transform="matrix(1 0 0 1 546.6907 668.0718)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 5</tspan></text>
+	</g>
+	<g id="便携云巴_图例_">
+		<path class="st44" d="M673.56,1382.47H531.79c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h141.76
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C691.74,1374.33,683.6,1382.47,673.56,1382.47z"/>
+		<text transform="matrix(1 0 0 1 518.9151 1369.7753)" class="st9 st32 st45">云</text>
+		<text transform="matrix(1 0 0 1 579.3265 1344.161)" class="st9 st29 st46">便携云巴</text>
+		<text transform="matrix(1 0 0 1 574.2864 1373.7891)" class="st9 st32 st46">ART-BUS</text>
+	</g>
+	<g id="远洋南大陆西线_图例_">
+		<path class="st47" d="M913.73,1831.93H725.5c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h188.23
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C931.91,1823.78,923.77,1831.93,913.73,1831.93z"/>
+		<text transform="matrix(1 0 0 1 712.0512 1796.5541)" class="st48 st29 st49">远洋南大陆西线</text>
+		<text transform="matrix(1 0 0 1 712.9386 1820.7716)" class="st48 st32 st50">South-Earth Toward West Line</text>
+	</g>
+	<g id="耀青碉堡城际_图例_">
+		<path class="st47" d="M1071.86,599.56H883.55c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h188.31
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C1090.04,591.42,1081.9,599.56,1071.86,599.56z"/>
+		<text transform="matrix(1 0 0 1 880.248 566.0692)" class="st48 st29 st51">碉堡耀青城际</text>
+		<text transform="matrix(1 0 0 1 870.984 588.4073)" class="st48 st32 st50">Diaobao-Yaoqing Intercity Line</text>
+	</g>
+	<g id="耀青市域轻轨西线_图例_">
+		<path class="st52" d="M890.79,339.47H699.03c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h191.75
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C908.97,331.33,900.83,339.47,890.79,339.47z"/>
+		<text transform="matrix(1 0 0 1 694.7699 305.9753)" class="st48 st29 st53">耀青市域轻轨西线</text>
+		<text transform="matrix(1 0 0 1 699.0706 326.6399)" class="st48 st32 st50">Yaoqing Intercity West Line</text>
+	</g>
+	<g id="耀青市域轻轨东线_图例_">
+		<path class="st52" d="M1792.71,1454.71h-191.75c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h191.75
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C1810.9,1446.57,1802.76,1454.71,1792.71,1454.71z"/>
+		<text transform="matrix(1 0 0 1 1596.6942 1421.2177)" class="st48 st29 st53">耀青市域轻轨东线</text>
+		<text transform="matrix(1 0 0 1 1600.995 1441.8821)" class="st48 st32 st50">Yaoqing Intercity East Line</text>
+	</g>
+	<g id="耀青环中心城区线_图例_">
+		<path class="st54" d="M1668.7,631.51h-305.74c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h305.74
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C1686.89,623.37,1678.75,631.51,1668.7,631.51z"/>
+		<text transform="matrix(1 0 0 1 1412.8319 591.6691)" class="st9 st29 st36">耀青环中心城区线</text>
+		<text transform="matrix(1 0 0 1 1353.5292 619.4142)" class="st9 st37 st38">环</text>
+		<text transform="matrix(1 0 0 1 1413.4799 619.4142)" class="st9 st32 st39">Yaoqing Downtown Circle Line</text>
+	</g>
+	<g id="耀青公交1路_图例_">
+		<path class="st55" d="M1795.45,402.29h-117.42c-6.79,0-12.3-5.51-12.3-12.3V372.3c0-6.79,5.51-12.3,12.3-12.3h117.42
+			c6.79,0,12.3,5.51,12.3,12.3V390C1807.75,396.79,1802.24,402.29,1795.45,402.29z"/>
+		<text transform="matrix(1 0 0 1 1671.6074 388.5607)" class="st9 st32 st56">1路</text>
+		<text transform="matrix(1 0 0 1 1706.6738 376.8664)" class="st9 st29 st57">耀青公交</text>
+		<text transform="matrix(1 0 0 1 1706.6738 394.6276)" class="st9 st32 st57">Yaoqing Bus 1</text>
+	</g>
+	<g id="换乘下界高速_图例_">
+		<circle class="st58" cx="1035.78" cy="1727.96" r="28.55"/>
+		<path class="st58" d="M1037.71,1715.81"/>
+		<path class="st59" d="M1019.31,1742.91v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M1019.31,1742.91v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M1044.6,1738.81v-13.34c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="1025.14" y1="1737.14" x2="1021.42" y2="1742.62"/>
+		<line class="st62" x1="1045.85" y1="1737.14" x2="1049.57" y2="1742.62"/>
+	</g>
+	<g id="换乘下界高速_图例1_">
+		<circle class="st58" cx="1237.36" cy="1375.15" r="28.55"/>
+		<path class="st58" d="M1239.3,1363"/>
+		<path class="st59" d="M1220.9,1390.1v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M1220.9,1390.1v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M1246.18,1385.99v-13.34c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="1226.73" y1="1384.33" x2="1223.01" y2="1389.81"/>
+		<line class="st62" x1="1247.44" y1="1384.33" x2="1251.16" y2="1389.81"/>
+	</g>
+	<g id="换乘下界高速_图例2_">
+		<circle class="st58" cx="1016.89" cy="1228.31" r="28.55"/>
+		<path class="st58" d="M1018.82,1216.16"/>
+		<path class="st59" d="M1000.42,1243.27v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M1000.42,1243.27v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M1025.71,1239.16v-13.34c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="1006.25" y1="1237.49" x2="1002.53" y2="1242.97"/>
+		<line class="st62" x1="1026.96" y1="1237.49" x2="1030.68" y2="1242.97"/>
+	</g>
+	<g id="换乘下界高速_图例3_">
+		<circle class="st58" cx="39.83" cy="722.38" r="28.55"/>
+		<path class="st58" d="M41.77,710.23"/>
+		<path class="st59" d="M23.36,737.34v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M23.36,737.34v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M48.65,733.23v-13.34c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="29.19" y1="731.56" x2="25.47" y2="737.04"/>
+		<line class="st62" x1="49.91" y1="731.56" x2="53.63" y2="737.04"/>
+	</g>
+	<g id="换乘下界高速_图例4_">
+		<circle class="st58" cx="2495.6" cy="422.6" r="28.55"/>
+		<path class="st58" d="M2497.54,410.45"/>
+		<path class="st59" d="M2479.13,437.55v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M2479.13,437.55v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M2504.42,433.44V420.1c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="2484.96" y1="431.78" x2="2481.24" y2="437.26"/>
+		<line class="st62" x1="2505.68" y1="431.78" x2="2509.4" y2="437.26"/>
+	</g>
+	<g id="换乘下界高速_图例5_">
+		<circle class="st58" cx="2530.76" cy="92.09" r="28.55"/>
+		<path class="st58" d="M2532.7,79.94"/>
+		<path class="st59" d="M2514.3,107.05V83.39c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M2514.3,107.05V83.39c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M2539.59,102.94V89.6c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="2520.13" y1="101.27" x2="2516.41" y2="106.75"/>
+		<line class="st62" x1="2540.84" y1="101.27" x2="2544.56" y2="106.75"/>
+	</g>
+	<path id="虚拟换乘_图例_" class="st7" d="
+		M2253.64,1711.99l22.2,12.08c8.55,4.65,18.86,4.73,27.48,0.19l23.32-12.27"/>
+	<path id="碉堡城区_展示图例_" class="st17" d="M1690.29,1894.93h-18.38c-6.77,0-12.26-5.49-12.26-12.26v-29.62
+		c0-6.77,5.49-12.26,12.26-12.26h18.38c6.77,0,12.26,5.49,12.26,12.26v29.62C1702.54,1889.45,1697.06,1894.93,1690.29,1894.93z"/>
+	<path id="老坑站_展示图例_" class="st17" d="M1589.64,1880.87h-31.54c-7.18,0-13-5.82-13-13l0,0c0-7.18,5.82-13,13-13
+		h31.54c7.18,0,13,5.82,13,13l0,0C1602.63,1875.05,1596.81,1880.87,1589.64,1880.87z"/>
+	<circle id="竹泉镇东_展示图例_" class="st16" cx="2334.13" cy="1707.47" r="9.7"/>
+	<circle id="竹泉镇东_展示图例2_" class="st12" cx="2243.94" cy="1707.94" r="9.7"/>
+	<circle id="地狱入口_展示图例_" class="st27" cx="1623.82" cy="1800.03" r="9.7"/>
+	<g id="碉堡1号线_展示图例_">
+		<path class="st35" d="M1692.58,1745.26h-137.51c-10.04,0-18.19-8.14-18.19-18.19v-30.61c0-10.04,8.14-18.19,18.19-18.19h137.51
+			c10.04,0,18.19,8.14,18.19,18.19v30.61C1710.77,1737.11,1702.62,1745.26,1692.58,1745.26z"/>
+		<text transform="matrix(1 0 0 1 1584.495 1705.4149)"><tspan x="0" y="0" class="st9 st29 st36">碉堡</tspan><tspan x="0" y="27.75" class="st9 st29 st36">号线</tspan></text>
+		<text transform="matrix(1 0 0 1 1548.639 1733.16)" class="st9 st37 st38">1</text>
+		<text transform="matrix(1 0 0 1 1632.6771 1707.4667)"><tspan x="0" y="0" class="st9 st32 st39">Diaobao</tspan><tspan x="0" y="27.75" class="st9 st32 st39">Line 1</tspan></text>
+	</g>
+	<g id="换乘下界高速_展示图例_">
+		<circle class="st58" cx="2291.76" cy="1799.03" r="28.55"/>
+		<path class="st58" d="M2293.7,1786.88"/>
+		<path class="st59" d="M2275.29,1813.99v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st60" d="M2275.29,1813.99v-23.66c0-4.14,3.35-7.49,7.49-7.49h17.36c4.14,0,7.49,3.35,7.49,7.49v23.66"/>
+		<path class="st61" d="M2300.58,1809.88v-13.34c0-2.33-1.89-4.22-4.22-4.22h-9.79c-2.33,0-4.22,1.89-4.22,4.22v13.34"/>
+		<line class="st62" x1="2281.12" y1="1808.21" x2="2277.4" y2="1813.69"/>
+		<line class="st62" x1="2301.84" y1="1808.21" x2="2305.56" y2="1813.69"/>
+	</g>
+</g>
+</svg>
+
+<!-- ==================== 地铁图 SVG 结束 ==================== -->
+    </div>
+
+    <div class="map-tooltip" id="map-tooltip"></div>
+
+    <div class="map-legend">
+      <div class="row"><span class="swatch ride"></span> 乘车区间</div>
+      <div class="row"><span class="swatch walk"></span> 出站步行换乘</div>
+      <div class="row" style="opacity:.7">滚轮缩放 · 拖拽平移 · 点击站点</div>
+    </div>
+
+    <div class="map-tools">
+      <button id="zoom-in" type="button" title="放大">＋</button>
+      <button id="zoom-out" type="button" title="缩小">－</button>
+      <button id="zoom-reset" class="text-btn" type="button" title="复位视图">复位</button>
+      <button id="clear-route" class="text-btn" type="button" title="清除路线">清除</button>
+    </div>
+
+    <div class="loading-mask" id="loading-mask">
+      <div>
+        <div class="spinner"></div>
+        正在解析地铁图数据…
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
