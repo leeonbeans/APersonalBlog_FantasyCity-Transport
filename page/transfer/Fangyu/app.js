@@ -632,8 +632,31 @@
   let vb = { x: 0, y: 0, w: 2600, h: 1964 };
   let vbHome = null;
 
+  // 平移越界余量：允许视口略微超出原图边界（占原图宽/高的比例），
+  // 既不会把地图拖丢，又能看清边缘站点。
+  const PAN_MARGIN = 0.15;
+
+  // 缩放范围：基于原图尺寸计算，避免硬编码数值与地图脱节。
+  //   minW = 原图宽 × 0.06 → 最大可放大到约 16 倍；
+  //   maxW = 原图宽 × 2.6  → 最大可缩小到看到约 2.6 张原图。
+  function zoomBounds() {
+    return { min: vbHome.w * 0.5, max: vbHome.w * 2 };
+  }
+
+  // 约束视口位置：把 viewBox 限制在「原图 + 余量」范围内，防止无限拖拽。
+  function clampPan() {
+    if (!vbHome) return;
+    const mx = vbHome.w * PAN_MARGIN, my = vbHome.h * PAN_MARGIN;
+    const loX = vbHome.x - mx, hiX = vbHome.x + vbHome.w + mx - vb.w;
+    const loY = vbHome.y - my, hiY = vbHome.y + vbHome.h + my - vb.h;
+    // 当视口比允许范围还大（缩得很小）时，loX > hiX，此时居中显示。
+    vb.x = (loX > hiX) ? (loX + hiX) / 2 : clamp(vb.x, loX, hiX);
+    vb.y = (loY > hiY) ? (loY + hiY) / 2 : clamp(vb.y, loY, hiY);
+  }
+
   function applyViewBox() {
     const svg = getSvg(); if (!svg) return;
+    clampPan();
     svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
   }
   function readViewBox(svg) {
@@ -681,7 +704,8 @@
       e.preventDefault();
       const factor = e.deltaY < 0 ? 0.86 : 1.16;
       const p = clientToSvg(svg, e.clientX, e.clientY);
-      const newW = clamp(vb.w * factor, 140, 7000);
+      const zb = zoomBounds();
+      const newW = clamp(vb.w * factor, zb.min, zb.max);
       const ratio = newW / vb.w;
       vb.x = p.x - (p.x - vb.x) * ratio;
       vb.y = p.y - (p.y - vb.y) * ratio;
@@ -762,7 +786,8 @@
 
   function zoomBy(factor) {
     const cx = vb.x + vb.w / 2, cy = vb.y + vb.h / 2;
-    const newW = clamp(vb.w * factor, 140, 7000);
+    const zb = zoomBounds();
+    const newW = clamp(vb.w * factor, zb.min, zb.max);
     const ratio = newW / vb.w;
     vb.w = newW; vb.h = vb.h * ratio;
     vb.x = cx - vb.w / 2; vb.y = cy - vb.h / 2;
