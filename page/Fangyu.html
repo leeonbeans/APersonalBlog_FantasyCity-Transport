@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>方域大陆</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-deep:#060a10; --bg-primary:#0a0e14; --bg-card:#111820;
+            --border:#1e2a3a; --border-bright:#2a3a4e;
+            --cyan:#00e5ff; --cyan-dim:#007a8a;
+            --amber:#f0a030; --green:#30f070;
+            --text-pri:#e0e8f0; --text-sec:#7a8a9e; --text-dim:#4a5a6e;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{background:var(--bg-deep);color:var(--text-pri);font-family:'Rajdhani','Segoe UI',sans-serif;overflow-x:hidden}
+        .font-tech{font-family:'Orbitron',monospace}
+
+        .grid-bg{
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+            background-size:60px 60px;
+        }
+
+        .transit-line{height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);background-size:200% 100%;animation:flow 3s linear infinite}
+        @keyframes flow{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        .site-header{background:rgba(6,10,16,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:fixed;top:0;left:0;right:0;z-index:50}
+
+        /* Hero */
+        .hero{
+            position:relative;min-height:70vh;
+            display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
+        }
+        .hero-bg{
+            position:absolute;inset:0;
+            background:url('../image/main_view.webp') center/cover no-repeat;
+            filter:brightness(0.3) saturate(0.6);
+        }
+        .hero-overlay{
+            position:absolute;inset:0;
+            background:linear-gradient(180deg,rgba(6,10,16,0.6) 0%,rgba(6,10,16,0.95) 100%);
+        }
+
+        /* City section */
+        .city-section{
+            position:relative;
+            padding-left:3rem;
+        }
+        .city-section::before{
+            content:'';position:absolute;left:11px;top:0;bottom:0;
+            width:2px;background:var(--border);
+        }
+        .city-station{
+            position:absolute;left:0;top:2.5rem;
+            width:24px;height:24px;border-radius:50%;
+            border:3px solid var(--cyan);background:var(--bg-deep);
+            z-index:2;display:flex;align-items:center;justify-content:center;
+        }
+        .city-station .inner{width:8px;height:8px;border-radius:50%;background:var(--cyan)}
+
+        /* Station dot */
+        .station-dot{
+            width:12px;height:12px;border-radius:50%;
+            border:2px solid var(--cyan);background:var(--bg-deep);
+            position:relative;z-index:2;
+        }
+        .station-dot.active{background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+
+        /* City card */
+        .city-card{
+            background:var(--bg-card);border:1px solid var(--border);
+            overflow:hidden;transition:all 0.3s ease;
+        }
+        .city-card:hover{
+            border-color:var(--border-bright);
+            box-shadow:0 4px 24px rgba(0,0,0,0.3);
+        }
+
+        /* Image container */
+        .img-frame{
+            position:relative;overflow:hidden;
+            border:1px solid var(--border);
+        }
+        .img-frame img{
+            width:100%;height:100%;object-fit:cover;
+            transition:transform 0.5s ease;
+        }
+        .img-frame:hover img{transform:scale(1.03)}
+        .img-frame .img-overlay{
+            position:absolute;inset:0;
+            background:linear-gradient(180deg,transparent 60%,rgba(6,10,16,0.7) 100%);
+            pointer-events:none;
+        }
+
+        /* CTA button */
+        .btn-transit{
+            display:inline-flex;align-items:center;gap:0.5rem;
+            padding:0.5rem 1.5rem;
+            border:1px solid var(--cyan);color:var(--cyan);
+            font-family:'Orbitron',monospace;font-size:0.7rem;
+            letter-spacing:0.15em;text-transform:uppercase;
+            transition:all 0.3s ease;text-decoration:none;
+        }
+        .btn-transit:hover{
+            background:rgba(0,229,255,0.1);
+            box-shadow:0 0 16px rgba(0,229,255,0.2);
+        }
+
+        /* Stats bar */
+        .stat-bar{
+            display:flex;align-items:center;gap:0.5rem;
+            padding:0.75rem 1rem;
+            background:var(--bg-card);border:1px solid var(--border);
+        }
+        .stat-dot{width:8px;height:8px;border-radius:50%}
+
+        /* Reveal animation */
+        .reveal{opacity:0;transform:translateY(24px);transition:all 0.7s cubic-bezier(0.4,0,0.2,1)}
+        .reveal.visible{opacity:1;transform:translateY(0)}
+
+        /* Route map mini */
+        .route-mini{display:flex;align-items:center;gap:0}
+        .route-mini .stop{width:10px;height:10px;border-radius:50%;border:2px solid;flex-shrink:0}
+        .route-mini .seg{height:2px;flex:1}
+
+        /* Corner brackets */
+        .corner-frame{position:relative}
+        .corner-frame::before,.corner-frame::after{content:'';position:absolute;width:14px;height:14px;border-color:var(--cyan-dim);border-style:solid}
+        .corner-frame::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+        .corner-frame::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+
+        /* Carousel */
+        .carousel-inner{position:relative;width:100%;height:100%}
+        .carousel-item{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out;z-index:0}
+        .carousel-item.active{opacity:1;z-index:1}
+        .carousel-caption{
+            position:absolute;bottom:0;left:0;right:0;
+            background:linear-gradient(to top,rgba(6,10,16,0.85) 0%,transparent 100%);
+            padding:2.5rem 1.5rem 1.5rem;
+        }
+        .carousel-caption h4{font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:0.25rem}
+        .carousel-caption p{font-size:0.85rem;color:var(--text-sec)}
+        .carousel-btn{
+            position:absolute;top:50%;transform:translateY(-50%);z-index:20;
+            width:2.5rem;height:2.5rem;border-radius:50%;
+            background:rgba(6,10,16,0.5);color:#fff;
+            display:flex;align-items:center;justify-content:center;
+            border:1px solid var(--border);cursor:pointer;
+            transition:all 0.3s ease;
+        }
+        .carousel-btn:hover{background:rgba(6,10,16,0.8);border-color:var(--cyan-dim)}
+        .carousel-btn.prev{left:1rem}
+        .carousel-btn.next{right:1rem}
+        .carousel-indicators{position:absolute;bottom:1rem;left:0;right:0;display:flex;justify-content:center;gap:0.5rem;z-index:20}
+        .carousel-dot{
+            width:0.5rem;height:0.5rem;border-radius:50%;
+            background:rgba(255,255,255,0.3);cursor:pointer;
+            transition:all 0.3s ease;border:none;padding:0;
+        }
+        .carousel-dot.active{background:var(--cyan);transform:scale(1.3)}
+
+        /* Modal */
+        .modal{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:60;display:none;align-items:center;justify-content:center;cursor:pointer}
+        .modal img{max-width:92%;max-height:90%;border:1px solid var(--border)}
+
+        @media(max-width:768px){
+            .city-section{padding-left:2rem}
+            .city-grid{grid-template-columns:1fr !important}
+        }
+    </style>
+</head>
+<body class="grid-bg">
+    <!-- Header -->
+    <header class="site-header">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img width="40" height="40" src="../image/metro_logo_single.webp" alt="Logo">
+                <span class="font-tech text-sm tracking-widest" style="color:var(--cyan)">LEEON'S</span>
+            </div>
+            <nav class="flex items-center gap-6 text-sm tracking-wider">
+                <a href="../index.html" class="hover:text-white transition-colors" style="color:var(--text-sec)">
+                    <i class="fa fa-arrow-left mr-1"></i> 返回大区总览
+                </a>
+            </nav>
+        </div>
+        <div class="transit-line"></div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="relative z-10 text-center px-6 pt-16">
+            <!-- Breadcrumb -->
+            <div class="font-tech text-xs tracking-[0.3em] mb-6" style="color:var(--text-dim)">
+                REGION ZONE
+            </div>
+
+            <!-- Region name -->
+            <h1 class="font-tech text-4xl md:text-6xl font-black mb-3 tracking-wider" style="text-shadow:0 0 30px rgba(0,229,255,0.4)">
+                方域大陆
+            </h1>
+            <h2 class="font-tech text-2xl md:text-3xl font-bold mb-6 tracking-[0.2em]" style="color:var(--cyan)">
+                FANGYU LAND
+            </h2>
+
+            <!-- Transit route visualization -->
+            <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-3 h-3 rounded-full" style="background:var(--cyan);box-shadow:0 0 8px var(--cyan)"></div>
+                </div>
+                <div style="width:60px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--amber))"></div>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-3 h-3 rounded-full" style="background:var(--amber);box-shadow:0 0 8px var(--amber)"></div>
+                </div>
+                <div style="width:60px;height:2px;background:linear-gradient(90deg,var(--amber),var(--green))"></div>
+                <div class="flex flex-col items-center gap-1">
+                    <div class="w-3 h-3 rounded-full" style="background:var(--green);box-shadow:0 0 8px var(--green)"></div>
+                </div>
+            </div>
+
+            <p class="text-lg max-w-2xl mx-auto mb-8" style="color:var(--text-sec)">
+                从碉堡的起源到耀青的辉煌，再到先洁的圣洁——<br>
+                这里是一切的起点，也是故事展开的地方。
+            </p>
+
+            <!-- Stats -->
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="stat-bar corner-frame">
+                    <div class="stat-dot" style="background:var(--cyan)"></div>
+                    <span class="font-tech text-xs tracking-wider" style="color:var(--text-sec)">3+ 座城市</span>
+                </div>
+                <div class="stat-bar corner-frame">
+                    <div class="stat-dot" style="background:var(--amber)"></div>
+                    <span class="font-tech text-xs tracking-wider" style="color:var(--text-sec)">8+ 条线路</span>
+                </div>
+                <div class="stat-bar corner-frame">
+                    <div class="stat-dot" style="background:var(--green)"></div>
+                    <span class="font-tech text-xs tracking-wider" style="color:var(--text-sec)">2 家运营公司</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="py-20 px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <!-- ═══ Service Record ═══ -->
+            <div class="mb-20 reveal">
+                <div class="text-center mb-8">
+                    <div class="font-tech text-xs tracking-[0.3em]" style="color:var(--cyan)">── SERVICE RECORD ──</div>
+                </div>
+
+                <div class="relative pl-8 md:pl-12 space-y-8">
+                    <!-- Vertical transit line -->
+                    <div class="absolute left-3 md:left-5 top-0 bottom-0 w-0.5" style="background:var(--border)"></div>
+
+                    <!-- Stop 1 -->
+                    <div class="relative">
+                        <div class="absolute left-[-25px] md:left-[-33px] top-1 station-dot active"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--cyan); background-color: var(--cyan);">STOP.01</div>
+                            <h4 class="text-xl font-bold mb-1">碉堡市 · 城建副设计 / 交通主设计</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                主力修建孤珀云宅、城缘海住宅及碉堡耀青跨海大桥。设计建造地铁1-5号线、碉堡耀青城际铁路及远洋南大陆西线铁路。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Stop 2 -->
+                    <div class="relative">
+                        <div class="absolute left-[-25px] md:left-[-33px] top-1 station-dot active" style="border-color:var(--amber); background-color: var(--amber);"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--amber); background-color: var(--amber);">STOP.02</div>
+                            <h4 class="text-xl font-bold mb-1">耀青市 · 城建主设计 / 交通总设计</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                主力修建地标耀青殿，设计竹泉镇、欧城欧堡、海洋高邸等奇观。建造环中心城区线地铁、市域轻轨及公交系统。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Stop 3 -->
+                    <div class="relative">
+                        <div class="absolute left-[-25px] md:left-[-33px] top-1 station-dot active" style="border-color:var(--green); background-color: var(--green);"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--green); background-color: var(--green);">STOP.03</div>
+                            <h4 class="text-xl font-bold mb-1">先遣圣洁基地 · 总设计</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                全额修建先遣站点、圣泉池、全境最大折跃门越界门及图书教堂。设计经过基地的碉堡市地铁5号线。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section intro -->
+            <div class="text-center mb-20 reveal">
+                <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">── CITIES IN THIS REGION ──</div>
+                <h2 class="font-tech text-3xl font-bold mb-4 tracking-wide">大区下辖城市</h2>
+                <p class="text-lg" style="color:var(--text-sec)">
+                    三座城市各具特色，通过发达的交通网络紧密相连
+                </p>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- CITY 1: 碉堡市 -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="city-section mb-24 reveal">
+                <div class="city-station"><div class="inner"></div></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start city-grid">
+                    <!-- Info -->
+                    <div>
+                        <div class="font-tech text-xs tracking-[0.2em] mb-2" style="color:var(--cyan)">CITY.01</div>
+                        <h3 class="font-tech text-3xl md:text-4xl font-bold mb-2 tracking-wide">碉堡市</h3>
+                        <p class="font-tech text-xs tracking-wider mb-6" style="color:var(--text-dim)">DIAOBAO CITY</p>
+
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            <b style="color:var(--text-pri)">碉堡市</b>，因最初建造的一座小型碉堡而得名。城市地处要塞般的地理位置，西北毗邻先洁基地，东北与耀青市隔岸相望。
+                        </p>
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            以碉堡为中心，逐渐向四方延伸出独具特色的建筑群：北有高耸的十层信标金字塔与伊丽莎白塔大本钟；西有银白色工业区；南有临海别墅群与铁路火车站；东临浩瀚水域，与耀青市遥相呼应。
+                        </p>
+
+                        <!-- Transit lines -->
+                        <div class="mb-6">
+                            <div class="font-tech text-xs tracking-wider mb-3" style="color:var(--text-dim)">TRANSIT LINES</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#80225F;color:#fff">1</div>
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#0044E3;color:#fff">2</div>
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#00843D;color:#fff">3</div>
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#C5003E;color:#fff">4</div>
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#97D700;color:#000">5</div>
+                                    <span class="text-sm ml-2" style="color:var(--text-sec)">地铁 1-5号线 (含3号线支线)</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#A8A5A5"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">碉堡耀青城际铁路、远洋南大陆西线城际铁路</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#00ACFF"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">耀青市域轻轨东线城际铁路</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#565656"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">便携云巴</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="./Diaobao.html" class="btn-transit">
+                            了解更多 <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <!-- Image Carousel -->
+                    <div>
+                        <div class="img-frame rounded-lg" style="aspect-ratio:16/10">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="../image/Diaobao_main.webp" alt="碉堡市主视图" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>碉堡市中心全景</h4>
+                                        <p>以碉堡为中心向四方延伸的城市</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="../image/Cityside_Ocean_house.webp" alt="城缘海地区住宅之一" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>城缘海地区住宅之一</h4>
+                                        <p>现也为首席执行官Leeon的住宅</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="../image/Diaobao-Yaoqing_bridge.webp" alt="碉堡耀青跨城大桥" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>碉堡耀青跨城大桥</h4>
+                                        <p>两地跨城交通命脉</p>
+                                    </div>
+                                </div>
+                                <button class="carousel-btn prev" data-action="prev"><i class="fa fa-chevron-left"></i></button>
+                                <button class="carousel-btn next" data-action="next"><i class="fa fa-chevron-right"></i></button>
+                                <div class="carousel-indicators">
+                                    <button class="carousel-dot active" data-index="0"></button>
+                                    <button class="carousel-dot" data-index="1"></button>
+                                    <button class="carousel-dot" data-index="2"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- CITY 2: 耀青市 -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="city-section mb-24 reveal">
+                <div class="city-station" style="border-color: var(--amber);">
+                    <div class="inner" style="background:var(--amber)"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start city-grid">
+                    <!-- Image Carousel (reversed layout) -->
+                    <div class="md:order-2">
+                        <div class="img-frame rounded-lg" style="aspect-ratio:16/10">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="../image/Yaoqing_main.webp" alt="耀青市主视图" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>耀青市全景</h4>
+                                        <p>历史与未来交汇的滨海城市</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="../image/Zhuquan_town.webp" alt="竹泉镇镇景" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>竹泉镇镇景</h4>
+                                        <p>竹泉镇已成为耀青市特色城镇之一</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="../image/Ou_castle.webp" alt="欧城欧堡一景" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>欧城欧堡一景</h4>
+                                        <p>摄于荒木酒馆</p>
+                                    </div>
+                                </div>
+                                <button class="carousel-btn prev" data-action="prev"><i class="fa fa-chevron-left"></i></button>
+                                <button class="carousel-btn next" data-action="next"><i class="fa fa-chevron-right"></i></button>
+                                <div class="carousel-indicators">
+                                    <button class="carousel-dot active" data-index="0"></button>
+                                    <button class="carousel-dot" data-index="1"></button>
+                                    <button class="carousel-dot" data-index="2"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="md:order-1">
+                        <div class="font-tech text-xs tracking-[0.2em] mb-2" style="color:var(--amber)">CITY.02</div>
+                        <h3 class="font-tech text-3xl md:text-4xl font-bold mb-2 tracking-wide">耀青市</h3>
+                        <p class="font-tech text-xs tracking-wider mb-6" style="color:var(--text-dim)">YAOQING CITY</p>
+
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            <b style="color:var(--text-pri)">耀青市</b>，因恢宏庄严的耀青殿而得名，是一座兼具历史底蕴与现代活力的滨海城市。自最初的海边建筑群起步，城市逐步向东岸大陆拓展，形成了今日的广阔市域格局。
+                        </p>
+
+                        <div class="mb-6">
+                            <div class="font-tech text-xs tracking-wider mb-3" style="color:var(--text-dim)">LANDMARKS</div>
+                            <ul class="space-y-2 text-lg" style="color:var(--text-sec)">
+                                <li class="flex items-start gap-2">
+                                    <span style="color:var(--amber)">▸</span>
+                                    <span><b style="color:var(--text-pri)">耀青殿</b>：城市文明的起点，亦是精神象征</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span style="color:var(--amber)">▸</span>
+                                    <span><b style="color:var(--text-pri)">枯坑矿井遗址</b>：曾支撑城市兴起的经济命脉，现为工业遗迹展馆</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span style="color:var(--amber)">▸</span>
+                                    <span><b style="color:var(--text-pri)">城市中心定位信标</b>：明耀光柱定位市中心，四方各地皆望明</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span style="color:var(--amber)">▸</span>
+                                    <span><b style="color:var(--text-pri)">欧城区</b>：因欧城欧堡的建成而崛起的新兴城区</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Transit lines -->
+                        <div class="mb-6">
+                            <div class="font-tech text-xs tracking-wider mb-3" style="color:var(--text-dim)">TRANSIT LINES</div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#FFB00A;color:#fff"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">环中心城区线</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#A8A5A5"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">碉堡耀青城际铁路</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#00ACFF"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">耀青市域轻轨西线城际铁路、耀青市域轻轨东线城际铁路</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-1.5 rounded" style="background:#0044E3"></div>
+                                    <span class="text-sm" style="color:var(--text-sec)">公交 1 线</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="./Yaoqing.html" class="btn-transit" style="border-color:var(--amber);color:var(--amber)">
+                            了解更多 <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- CITY 3: 先遣圣洁基地 -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="city-section mb-16 reveal">
+                <div class="city-station" style="border-color: var(--green);">
+                    <div class="inner" style="background:var(--green)"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start city-grid">
+                    <!-- Info -->
+                    <div>
+                        <div class="font-tech text-xs tracking-[0.2em] mb-2" style="color:var(--green)">CITY.03</div>
+                        <h3 class="font-tech text-3xl md:text-4xl font-bold mb-2 tracking-wide">先遣圣洁基地</h3>
+                        <p class="font-tech text-xs tracking-wider mb-6" style="color:var(--text-dim)">PRE-PURE BASE</p>
+
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            <b style="color:var(--text-pri)">先遣圣洁基地</b>，坐落于北部海岸，与碉堡市西北部接壤，是一座拥有特殊历史的直辖行政区。
+                        </p>
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            城市最初因"先遣站点"而生，当地勇士们在此整装待发，踏入未知的下界开拓疆土。为了迎接凯旋的战士，城中修建了象征纯净与守护的<b style="color:var(--text-pri)">圣泉池</b>。开拓胜利后，建成了全境最大的下界折跃门——<b style="color:var(--text-pri)">越界门</b>，一跃成为全境最富饶与繁盛的地区。
+                        </p>
+                        <p class="text-lg leading-relaxed mb-6" style="color:var(--text-sec)">
+                            随之崛起的<b style="color:var(--text-pri)">图书教堂</b>，融合了智慧与信仰，既是知识的殿堂，也是心灵的圣所，彰显了先遣圣洁基地独特的精神与文化底蕴。
+                        </p>
+
+                        <!-- Transit lines -->
+                        <div class="mb-6">
+                            <div class="font-tech text-xs tracking-wider mb-3" style="color:var(--text-dim)">TRANSIT LINES</div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#97D700;color:#000">5</div>
+                                <span class="text-sm" style="color:var(--text-sec)">碉堡市地铁5号线</span>
+                            </div>
+                        </div>
+
+                        <a href="./Pre-PureBase.html" class="btn-transit" style="border-color:var(--green);color:var(--green)">
+                            了解更多 <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <!-- Image Carousel -->
+                    <div>
+                        <div class="img-frame rounded-lg" style="aspect-ratio:16/10">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="../image/Pre-Pure_base_main.webp" alt="先遣圣洁基地主视图" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>先遣圣洁基地全景</h4>
+                                        <p>探索与财富的象征，圣洁与荣耀的灯塔</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="../image/Pre-Pure_base.webp" alt="先潔基地一景" class="w-full h-full object-cover" onclick="showModal(this)">
+                                    <div class="carousel-caption">
+                                        <h4>先潔基地一景</h4>
+                                        <p>摄于先潔基地折跃门附近</p>
+                                    </div>
+                                </div>
+                                <button class="carousel-btn prev" data-action="prev"><i class="fa fa-chevron-left"></i></button>
+                                <button class="carousel-btn next" data-action="next"><i class="fa fa-chevron-right"></i></button>
+                                <div class="carousel-indicators">
+                                    <button class="carousel-dot active" data-index="0"></button>
+                                    <button class="carousel-dot" data-index="1"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════ -->
+            <!-- Region transit overview -->
+            <!-- ═══════════════════════════════════════ -->
+            <div class="mt-20 reveal">
+                <div class="text-center mb-10">
+                    <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">── TRANSIT OVERVIEW ──</div>
+                    <h2 class="font-tech text-2xl font-bold tracking-wide">大区交通总览</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Leon's Metro Transit -->
+                    <div class="city-card p-6 rounded-lg">
+                        <div class="flex items-center gap-3 mb-4">
+                            <img width="48" height="48" src="../image/metro_logo.webp" alt="Metro Logo">
+                            <div>
+                                <h4 class="font-tech text-lg font-bold tracking-wider">Leon's Metro Transit</h4>
+                                <div class="font-tech text-xs" style="color:var(--text-dim)">METROPOLITAN TRANSIT</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm" style="color:var(--text-sec)">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#80225F;color:#fff">1</div>
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#0044E3;color:#fff">2</div>
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#00843D;color:#fff">3</div>
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#C5003E;color:#fff">4</div>
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#97D700;color:#000">5</div>
+                                <span class="ml-1">碉堡市地铁 1-5号线 (含3号线支线)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold" style="background:#FFB00A;color:#fff"></div>
+                                <span>耀青市环中心城区线</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-1.5 rounded" style="background:#0044E3"></div>
+                                <span>耀青市公交 1 线</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-1.5 rounded" style="background:#565656"></div>
+                                <span>碉堡市便携云巴线</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leon's Rail Transit -->
+                    <div class="city-card p-6 rounded-lg">
+                        <div class="flex items-center gap-3 mb-4">
+                            <img width="48" height="48" src="../image/rail_logo.webp" alt="Rail Logo">
+                            <div>
+                                <h4 class="font-tech text-lg font-bold tracking-wider">Leon's Rail Transit</h4>
+                                <div class="font-tech text-xs" style="color:var(--text-dim)">INTERCITY RAIL</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3 text-sm" style="color:var(--text-sec)">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-1.5 rounded" style="background:#A8A5A5"></div>
+                                <span>碉堡耀青城际铁路、远洋南大陆西线城际铁路</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-1.5 rounded" style="background:#00ACFF"></div>
+                                <span>耀青市域轻轨西线城际铁路、耀青市域轻轨东线城际铁路</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transit maps -->
+                <div class="mt-8">
+                    <div class="city-card rounded-lg overflow-hidden max-w-3xl mx-auto">
+                        <img src="../image/FangyuLandTransportation.webp" alt="方域大陆公共交通线路图" class="w-full cursor-pointer" onclick="showModal(this)">
+                        <div class="p-3 text-center">
+                            <span class="font-tech text-xs tracking-wider" style="color:var(--text-sec)">方域大陆公共交通线路图</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Back link -->
+    <div class="py-12 px-6 text-center">
+        <div class="transit-line max-w-2xl mx-auto mb-12"></div>
+        <a href="../index.html" class="btn-transit">
+            <i class="fa fa-arrow-left"></i> 返回世界大区总览
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6" style="background:var(--bg-primary);border-top:1px solid var(--border)">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img width="32" height="32" src="../image/metro_logo_single.webp" alt="Logo">
+                <span class="font-tech text-xs tracking-widest" style="color:var(--text-sec)">LEON's 方域大陆</span>
+            </div>
+            <p class="font-tech text-xs tracking-wider" style="color:var(--text-dim)">&copy; 2024-2026 LEEON'S SITE. ALL RIGHTS NOT RESERVED.</p>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="modal" onclick="hideModal()">
+        <img id="modal-img" alt="">
+    </div>
+
+    <!-- Back to top -->
+    <button id="backToTop" class="fixed bottom-8 right-8 w-10 h-10 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none z-40" style="background:var(--bg-card);border:1px solid var(--cyan-dim);color:var(--cyan)" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fa fa-chevron-up"></i>
+    </button>
+
+    <script>
+        function showModal(img){const m=document.getElementById('modal'),i=document.getElementById('modal-img');m.style.display='flex';i.src=img.src;i.alt=img.alt;document.body.style.overflow='hidden'}
+        function hideModal(){document.getElementById('modal').style.display='none';document.body.style.overflow='auto'}
+        window.onclick=e=>{if(e.target===document.getElementById('modal'))hideModal()};
+
+        // Carousel
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousels = document.querySelectorAll('.carousel-inner');
+            carousels.forEach(carousel => {
+                const items = carousel.querySelectorAll('.carousel-item');
+                const indicators = carousel.querySelectorAll('.carousel-dot');
+                const prevBtn = carousel.querySelector('[data-action="prev"]');
+                const nextBtn = carousel.querySelector('[data-action="next"]');
+                let currentIndex = 0;
+                const totalItems = items.length;
+
+                function updateCarousel() {
+                    items.forEach((item, index) => {
+                        item.classList.toggle('active', index === currentIndex);
+                    });
+                    indicators.forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentIndex);
+                    });
+                }
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+                        updateCarousel();
+                    });
+                }
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex + 1) % totalItems;
+                        updateCarousel();
+                    });
+                }
+                indicators.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        currentIndex = index;
+                        updateCarousel();
+                    });
+                });
+
+                updateCarousel();
+                if (totalItems > 1) {
+                    setInterval(() => {
+                        currentIndex = (currentIndex + 1) % totalItems;
+                        updateCarousel();
+                    }, 5000);
+                }
+            });
+        });
+
+        window.addEventListener('scroll',()=>{
+            const b=document.getElementById('backToTop');
+            window.scrollY>400?b.classList.remove('opacity-0','pointer-events-none'):b.classList.add('opacity-0','pointer-events-none');
+        });
+
+        const obs=new IntersectionObserver(entries=>{
+            entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+        },{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
+        document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+    </script>
+</body>
+</html>

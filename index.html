@@ -3,397 +3,598 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Leeon's Site</title>
-    <link rel="https://api.w.org/" href="/wp-json/">
+    <title>Leeon's Transportation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .carousel-item {
-                @apply absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out;
-            }
-            
-            .carousel-item.active {
-                @apply opacity-100 z-10;
-            }
-            
-            .carousel-indicator {
-                @apply w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300;
-            }
-            
-            .carousel-indicator.active {
-                @apply bg-white scale-125;
-            }
-        }
-    </style>
     <style>
-        /* 只保留必要的全局样式 */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-deep: #060a10;
+            --bg-primary: #0a0e14;
+            --bg-card: #111820;
+            --bg-card-hover: #1a2332;
+            --border: #1e2a3a;
+            --border-bright: #2a3a4e;
+            --cyan: #00e5ff;
+            --cyan-dim: #007a8a;
+            --amber: #f0a030;
+            --text-pri: #e0e8f0;
+            --text-sec: #7a8a9e;
+            --text-dim: #4a5a6e;
         }
-        
-        /* 简单的标题样式 */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:var(--bg-deep); color:var(--text-pri); font-family:'Rajdhani','Segoe UI',sans-serif; overflow-x:hidden; }
+        .font-tech { font-family:'Orbitron',monospace; }
+        .font-body { font-family:'Rajdhani','Segoe UI',sans-serif; }
+
+        /* Grid bg */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+            background-size:60px 60px;
         }
-        
-        h2 {
-            font-size: 2rem;
-            font-weight: bold;
+
+        /* Animated transit line */
+        .transit-line {
+            height:2px;
+            background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+            background-size:200% 100%;
+            animation:transitFlow 3s linear infinite;
         }
-        
-        h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
+        @keyframes transitFlow {
+            0%{background-position:200% 0}
+            100%{background-position:-200% 0}
         }
-        
-        /* 移除默认列表样式 */
-        ul, ol {
-            list-style: none;
-            padding: 0;
+        .transit-line-v {
+            width:2px;
+            background:linear-gradient(180deg,transparent,var(--cyan),transparent);
+            background-size:100% 200%;
+            animation:transitFlowV 3s linear infinite;
+        }
+        @keyframes transitFlowV {
+            0%{background-position:0 200%}
+            100%{background-position:0 -200%}
+        }
+
+        /* Station dot */
+        .station-dot {
+            width:12px; height:12px;
+            border-radius:50%;
+            border:2px solid var(--cyan);
+            background:var(--bg-deep);
+            position:relative; z-index:2;
+        }
+        .station-dot.active { background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+
+        /* Glow text */
+        .glow-text { text-shadow:0 0 20px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.2); }
+        .glow-amber { text-shadow:0 0 20px rgba(240,160,48,0.5); }
+
+        /* Achievement card */
+        .ach-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            padding:1.5rem 1rem;
+            text-align:center;
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        .ach-card:hover {
+            border-color:var(--cyan);
+            box-shadow:0 0 20px rgba(0,229,255,0.1);
+            transform:translateY(-2px);
+        }
+        .ach-card::before {
+            content:''; position:absolute; top:0; left:0;
+            width:100%; height:2px;
+        }
+
+        /* Region card */
+        .region-card {
+            background:var(--bg-card);
+            border:1px solid var(--border);
+            overflow:hidden;
+            transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+            cursor:pointer;
+            display:flex; flex-direction:column;
+        }
+        .region-card.active {
+            border-color:var(--cyan-dim);
+        }
+        .region-card.active:hover {
+            border-color:var(--cyan);
+            box-shadow:0 0 30px rgba(0,229,255,0.15),0 8px 32px rgba(0,0,0,0.4);
+            transform:translateY(-4px);
+        }
+        .region-card .card-img {
+            height:220px;
+            overflow:hidden;
+            position:relative;
+        }
+        .region-card .card-img img {
+            width:100%; height:100%; object-fit:cover;
+            transition:transform 0.6s ease;
+            filter:brightness(0.8);
+        }
+        .region-card.active:hover .card-img img {
+            transform:scale(1.05);
+            filter:brightness(1);
+        }
+        .region-card .card-body { padding:1.5rem; display:flex; flex-direction:column; flex:1; }
+        .region-card .card-overlay {
+            position:absolute; inset:0;
+            background:linear-gradient(180deg,transparent 40%,rgba(6,10,16,0.85) 100%);
+        }
+
+        /* Locked card */
+        .region-card.locked { opacity:0.45; cursor:default; }
+        .region-card.locked .card-img img { filter:grayscale(1) brightness(0.4); }
+
+        /* Badge */
+        .badge {
+            display:inline-block;
+            padding:0.15rem 0.6rem;
+            font-size:0.85rem;
+            letter-spacing:0.15em;
+            text-transform:uppercase;
+            border:3px solid;
+        }
+        .badge-offline { border-color:var(--text-pri); color:var(--text-pri); }
+        .badge-established { border-color:var(--cyan); color:var(--cyan); }
+        .badge-constructed { border-color:var(--amber); color:var(--amber); }
+        .badge-planned { border-color:var(--text-dim); color:var(--text-dim); }
+
+        /* Corner brackets */
+        .corner-frame { position:relative; }
+        .corner-frame::before,.corner-frame::after {
+            content:''; position:absolute; width:16px; height:16px;
+            border-color:var(--cyan-dim); border-style:solid;
+        }
+        .corner-frame::before { top:-1px; left:-1px; border-width:2px 0 0 2px; }
+        .corner-frame::after { bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+
+        /* Scroll reveal */
+        .reveal { opacity:0; transform:translateY(30px); transition:all 0.8s cubic-bezier(0.4,0,0.2,1); }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        /* Header */
+        .site-header {
+            background:rgba(6,10,16,0.92);
+            backdrop-filter:blur(12px);
+            border-bottom:1px solid var(--border);
+            position:fixed; top:0; left:0; right:0; z-index:50;
+        }
+
+        /* Hero */
+        .hero-section {
+            min-height:100vh;
+            padding-top:5rem;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            position:relative;
+        }
+        .hero_image {
+            max-width:100%;
+            max-height:75vh;
+            object-fit:cover;
+            border-radius:0.5rem;
+            border:1px solid var(--border);
+            margin:0 0 3rem 0;
+        }
+        .hero-bg-line {
+            position:absolute;
+            background:var(--cyan);
+            opacity:0.06;
+        }
+        .hero-bg-line.h { height:1px; width:100%; }
+        .hero-bg-line.v { width:1px; height:100%; }
+
+        /* Route connector */
+        .route-connector {
+            display:flex; align-items:center; gap:0;
+            margin:2rem 0;
+        }
+        .route-connector .line {
+            flex:1; height:2px;
+            background:var(--border);
+        }
+        .route-connector .line.lit {
+            background:linear-gradient(90deg,var(--cyan),var(--border));
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            margin-top:2rem;
+            animation:bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%,100%{transform:translateY(0)}
+            50%{transform:translateY(8px)}
+        }
+
+        /* Responsive */
+        @media(max-width:768px) {
+            .region-grid { grid-template-columns:1fr !important; }
+            .ach-grid { grid-template-columns:repeat(2,1fr) !important; }
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <div class="site-container">
-        <!-- 简化的头部导航 -->
-        <header class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-20">
-                    <div class="flex items-center space-x-3">
-                        <img width="60" height="60" src="./image/metro_logo_single.webp" class="custom-logo" alt="Leon's Metro Transit logo">
-                        <span class="text-xl font-bold">Leeon's Site</span>
-                    </div>
-                    <nav class="flex items-center">
-                        <a href="./page/old/old_index.html" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md font-medium">回到旧版</a>
-                        <p style="margin: 0 2rem;">&vert;</p>
-                        <a href="./" class="text-gray-700 hover:text-gray-900 font-medium">主页</a>
-                    </nav>
+<body class="grid-bg">
+    <!-- Header -->
+    <header class="site-header">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img width="40" height="40" src="./image/metro_logo_single.webp" alt="Logo">
+                <span class="font-tech text-sm tracking-widest text-cyan-400">LEEON'S</span>
+            </div>
+            <nav class="flex items-center gap-6 text-sm tracking-wider">
+                <a href="./pure_index.html" class="text-gray-500 hover:text-gray-300 transition-colors">清爽版主页</a>
+            </nav>
+        </div>
+        <div class="transit-line"></div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-section">
+        <!-- Background decorative lines -->
+        <div class="hero-bg-line h" style="top:20%"></div>
+        <div class="hero-bg-line h" style="top:60%"></div>
+        <div class="hero-bg-line h" style="top:80%"></div>
+        <div class="hero-bg-line v" style="left:15%"></div>
+        <div class="hero-bg-line v" style="left:50%"></div>
+        <div class="hero-bg-line v" style="left:85%"></div>
+
+        <div class="text-center px-6 relative z-10">
+            <!-- Designation -->
+            <div class="font-tech text-xs tracking-[0.3em] mb-6" style="color:var(--text-dim)">
+                ─── TRANSIT COMMAND CENTER ───
+            </div>
+
+            <!-- Main title -->
+            <h1 class="font-tech text-4xl md:text-6xl lg:text-7xl font-black mb-4 glow-text tracking-wider">
+                LEEON'S
+            </h1>
+            <h2 class="font-tech text-2xl md:text-4xl lg:text-5xl font-bold mb-6 tracking-widest" style="color:var(--cyan)">
+                TRANSPORTATION
+            </h2>
+
+            <!-- Subtitle -->
+            <p class="text-lg md:text-xl mb-2 font-body" style="color:var(--text-sec)">
+                致力于轨道交通发展 · 连接虚构世界的每一站
+            </p>
+            <p class="font-tech text-xs tracking-[0.2em] mb-10" style="color:var(--text-dim)">
+                CONNECTING YOU, MOVING FORWARD.
+            </p>
+
+            <div>
+                <img src="./image/main_view.webp" alt="Hero Image" class="hero_image">
+            </div>
+            <!-- Transit line decoration -->
+            <div class="flex items-center justify-center gap-3 mb-10">
+                <div class="station-dot active"></div>
+                <div style="width:60px;height:2px;background:var(--cyan);opacity:0.6"></div>
+                <div class="station-dot active"></div>
+                <div style="width:60px;height:2px;background:var(--cyan);opacity:0.6"></div>
+                <div class="station-dot active"></div>
+                <div style="width:40px;height:2px;background:var(--border)"></div>
+                <div class="station-dot"></div>
+                <div style="width:40px;height:2px;background:var(--border)"></div>
+                <div class="station-dot"></div>
+            </div>
+
+            <!-- CTA -->
+            <a href="#achievements" class="inline-block border px-8 py-3 font-tech text-sm tracking-widest hover:bg-cyan-500/10 transition-all" style="border-color:var(--cyan);color:var(--cyan)">
+                EXPLORE
+            </a>
+
+            <!-- Scroll indicator -->
+            <div class="scroll-indicator">
+                <div class="flex flex-col items-center gap-2" style="color:var(--text-dim)">
+                    <span class="font-tech text-xs tracking-widest">SCROLL</span>
+                    <div class="transit-line-v" style="height:30px"></div>
                 </div>
             </div>
-        </header>
-        
-        <!-- 简化的主内容区 -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <!-- 英雄区域 -->
-            <section class="text-center mb-16">
-                <h1 class="mb-6 text-4xl font-bold">致力于轨道交通发展</h1>
-                <p class="text-xl font-semibold mb-8">Connecting You, Moving Forward.</p>
-                <a href="./page/company.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors">
-                    关于Leon's Transit Company
+        </div>
+    </section>
+
+    <!-- Achievements -->
+    <section id="achievements" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- Section header -->
+            <div class="text-center mb-16 reveal">
+                <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">
+                    ── ACHIEVEMENTS ──
+                </div>
+                <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4 tracking-wide">建设成就总览</h2>
+                <p class="text-lg" style="color:var(--text-sec)">
+                    自2024年来，<b style="color:var(--text-pri)">Leon's Transit Company</b> 已参与多个世界的城建与交通建设
+                </p>
+            </div>
+
+            <!-- Achievement cards -->
+            <div class="ach-grid grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 reveal">
+                <div class="ach-card corner-frame">
+                    <div class="font-tech text-3xl md:text-4xl font-black mb-2" style="color:var(--cyan)">3+</div>
+                    <div class="text-sm tracking-wider" style="color:var(--text-sec)">参与世界大区</div>
+                </div>
+                <div class="ach-card corner-frame">
+                    <div class="font-tech text-3xl md:text-4xl font-black mb-2" style="color:var(--cyan)">5+</div>
+                    <div class="text-sm tracking-wider" style="color:var(--text-sec)">参与城市建设</div>
+                </div>
+                <div class="ach-card corner-frame">
+                    <div class="font-tech text-3xl md:text-4xl font-black mb-2" style="color:var(--amber)">15+</div>
+                    <div class="text-sm tracking-wider" style="color:var(--text-sec)">地铁运营线路</div>
+                </div>
+                <div class="ach-card corner-frame">
+                    <div class="font-tech text-3xl md:text-4xl font-black mb-2" style="color:var(--amber)">8+</div>
+                    <div class="text-sm tracking-wider" style="color:var(--text-sec)">城际运营线路</div>
+                </div>
+            </div>
+
+            <!-- Achievement details - transit route style -->
+            <div class="reveal">
+                <div class="text-center mb-8">
+                    <div class="font-tech text-xs tracking-[0.2em]" style="color:var(--amber)">── SERVICE RECORD ──</div>
+                </div>
+
+                <!-- Route line -->
+                <div class="relative pl-8 md:pl-12 space-y-8">
+                    <!-- Vertical transit line -->
+                    <div class="absolute left-3 md:left-5 top-0 bottom-0 w-0.5" style="background:var(--border)"></div>
+
+                    <!-- Stop 1 -->
+                    <div class="relative">
+                        <div class="absolute left-[-18px] md:left-[-26px] top-1 station-dot active"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--cyan)">ACHV. I</div>
+                            <h4 class="text-xl font-bold mb-1">「方域大陆」城建、交通主设计</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                主力设计碉堡市、耀青市、先洁基地等城市/地区城市建设，总领设计规划城市交通。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Stop 2 -->
+                    <div class="relative">
+                        <div class="absolute left-[-18px] md:left-[-26px] top-1 station-dot active"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--cyan)">ACHV. II</div>
+                            <h4 class="text-xl font-bold mb-1">「南方电信」交通设计共建单位</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                主力设计并共同修建主城城郊线、主城城际、跨洋城际、远航城际与拉特兰专线等轨道交通线路。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Stop 3 -->
+                    <div class="relative">
+                        <div class="absolute left-[-18px] md:left-[-26px] top-1 station-dot active"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--cyan)">ACHV. III</div>
+                            <h4 class="text-xl font-bold mb-1">「欧城」城市建设、交通总设计</h4>
+                            <p class="text-sm" style="color:var(--text-sec)">
+                                承担全市区域规划、交通规划建设，统筹欧城全城发展。目前已在欧城建设了7条地铁线路+1条轻轨线路。
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Future stop -->
+                    <div class="relative">
+                        <div class="absolute left-[-18px] md:left-[-26px] top-1 station-dot"></div>
+                        <div class="ml-4">
+                            <div class="font-tech text-xs tracking-wider mb-1" style="color:var(--text-dim)">NEXT</div>
+                            <h4 class="text-xl font-bold mb-1" style="color:var(--text-dim)">更多世界待探索……</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-10">
+                    <a href="./page/company.html" class="inline-block border px-8 py-3 font-tech text-sm tracking-widest hover:bg-cyan-500/10 transition-all" style="border-color:var(--cyan);color:var(--cyan)">
+                        COMPANY DETAILS
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Divider -->
+    <div class="transit-line mx-auto max-w-4xl"></div>
+
+    <!-- Regions -->
+    <section id="regions" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- Section header -->
+            <div class="text-center mb-16 reveal">
+                <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">
+                    ── WORLD REGIONS ──
+                </div>
+                <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4 tracking-wide">世界大区</h2>
+                <p class="font-tech text-xs tracking-[0.2em] mb-10" style="color:var(--text-dim)">
+                    REGION ZONE
+                </p>
+            </div>
+
+            <!-- Region cards grid -->
+            <div class="region-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+                <!-- Region ALPHA - Active -->
+                <a href="./page/Fangyu.html" class="region-card active reveal">
+                    <div class="card-img relative">
+                        <img src="./image/Diaobao_main.webp" alt="方域大陆">
+                        <div class="card-overlay"></div>
+                        <!-- Status badge -->
+                        <div class="absolute top-4 left-4">
+                            <span class="badge badge-offline font-tech">OFFLINE</span>
+                        </div>
+                        <!-- Region code -->
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="font-tech text-xs tracking-[0.2em] mb-1" style="color:var(--text-pri)">FANGYU LAND</div>
+                            <div class="font-tech text-xl font-bold tracking-wide text-white">方域大陆</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-sm mb-4" style="color:var(--text-sec)">
+                            包含 <b style="color:var(--text-pri)">碉堡市</b>、<b style="color:var(--text-pri)">耀青市</b>、<b style="color:var(--text-pri)">先遣圣洁基地</b> 三座城市/地区。
+                            拥有完善的地铁、轻轨、城际铁路及跨海大桥等交通网络。
+                        </p>
+                        <div class="flex items-center gap-2" style="margin-top:auto">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--text-pri)"></div>
+                            <div class="flex-1 h-px" style="background:var(--text-pri)"></div>
+                            <div class="w-2 h-2 rounded-full border" style="border-color:var(--text-pri)"></div>
+                        </div>
+                    </div>
                 </a>
-            </section>
-            
-            <!-- 主图片 -->
-            <section class="mb-16">
-                <img class="w-full rounded-2xl shadow-xl" src="./image/main_view.webp" alt="Leon's Transit Company Main view">
-            </section>
-            
-            <!-- 项目展示区域 -->
-            <section class="mb-16">
-                <h2 class="text-3xl font-bold text-center mb-12">参与多个重要城建、轨交项目设计</h2>
-                <p class="text-center text-xl mb-12">城建设计、轨交设计经验丰富，资历深厚。</p>
-                
-                <!-- 项目1 -->
-                <div class="mb-16 grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">碉堡市城建副设计、碉堡市交通主设计</h3>
-                        <p class="text-lg mb-2">主力修建了孤珀云宅、城缘海地区的多个住宅，以及碉堡耀青市域跨海大桥。</p>
-                        <p class="text-lg">设计并建造了碉堡市 <b>1、2、3、4、5号线</b> 地铁、碉堡耀青城际铁路，以及远洋南大陆西线铁路。</p>
+
+                <!-- Region BETA - Established -->
+                <a href="./page/region-beta.html" class="region-card active reveal">
+                    <div class="card-img relative">
+                        <img src="./image/TeleSouth/TheMainCityTheMainDistrict.webp" alt="南方电信">
+                        <div class="card-overlay"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge badge-established font-tech">ESTABLISHED</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="font-tech text-xs tracking-[0.2em] mb-1" style="color:var(--cyan)">TELECOM ZONE</div>
+                            <div class="font-tech text-xl font-bold tracking-wide text-white">南方电信</div>
+                        </div>
                     </div>
-                    <div class="relative w-full overflow-hidden rounded-xl shadow-2xl aspect-video">
-                        <div class="carousel-inner">
-                            <!-- 轮播图片1 -->
-                            <div class="carousel-item active">
-                                <img src="./image/Cityside_Ocean_house.webp" alt="城缘海住宅之一" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">城缘海地区住宅之一</h3>
-                                    <p>现也为首席执行官Leeon的住宅</p>
-                                </div>
-                            </div>
-                            
-                            <!-- 轮播图片2 -->
-                            <div class="carousel-item">
-                                <img src="./image/Diaobao-Yaoqing_bridge.webp" alt="碉堡耀青城域大桥" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">碉堡耀青跨城大桥</h3>
-                                    <p>两地跨城交通命脉</p>
-                                </div>
-                            </div>
-                            
-                            <!-- 轮播控制按钮 -->
-                            <button class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="prev">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                            <button class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="next">
-                                <i class="fa fa-chevron-right"></i>
-                            </button>
-                            
-                            <!-- 轮播指示器 -->
-                            <div class="absolute bottom-20 left-0 right-0 flex justify-center gap-2 z-20">
-                                <button class="carousel-indicator active" data-index="0"></button>
-                                <button class="carousel-indicator" data-index="1"></button>
-                            </div>
+                    <div class="card-body">
+                        <p class="text-sm mb-4" style="color:var(--text-sec)">
+                            这座由方块垒起的数字城邦，曾昼夜灯火通明，街道桥梁皆由我们亲手筑就。如今虽已沉寂，但每一块砖石里，都封存着并肩创造的欢声与热望。
+                        </p>
+                        <div class="flex items-center gap-2" style="margin-top:auto">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--cyan)"></div>
+                            <div class="flex-1 h-px" style="background:var(--cyan)"></div>
+                            <div class="w-2 h-2 rounded-full border" style="border-color:var(--cyan)"></div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Region GAMMA - Constructed -->
+                <a href="./page/region-gamma.html" class="region-card active reveal">
+                    <div class="card-img relative">
+                        <img src="./image/OuDistrict/OuDistrict_main.png" alt="欧城区特别行政市">
+                        <div class="card-overlay"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge badge-constructed font-tech">CONSTRUCTED</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="font-tech text-xs tracking-[0.2em] mb-1" style="color:var(--amber)">OU DISTRICT</div>
+                            <div class="font-tech text-xl font-bold tracking-wide text-white">欧城区特别行政市</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-sm mb-4" style="color:var(--text-sec)">
+                            两江交汇处，繁华正年轻。天际线舒展入碧空，滨江步道人潮如织。璀璨灯火点亮满城星辉，江心岛上，一座未来之城正蓬勃脉动。
+                        </p>
+                        <div class="flex items-center gap-2" style="margin-top:auto">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--amber)"></div>
+                            <div class="flex-1 h-px" style="background:var(--amber)"></div>
+                            <div class="w-2 h-2 rounded-full border" style="border-color:var(--amber)"></div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Region DELTA - Planned -->
+                <div class="region-card locked reveal">
+                    <div class="card-img relative">
+                        <div style="width:100%;height:100%;background:var(--border)"></div>
+                        <div class="card-overlay"></div>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge badge-planned font-tech">PLANNED</span>
+                        </div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <div class="font-tech text-xs tracking-[0.2em] mb-1" style="color:var(--text-dim)">REGION-DELTA</div>
+                            <div class="font-tech text-xl font-bold tracking-wide" style="color:var(--text-dim)">第四区 · ???</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-sm mb-4" style="color:var(--text-dim)">
+                            更多世界的建设规划即将公布。敬请期待……
+                        </p>
+                        <div class="flex items-center gap-2" style="margin-top:auto">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--text-dim)"></div>
+                            <div class="flex-1 h-px border-b border-dashed" style="border-color:var(--text-dim)"></div>
+                            <div class="w-2 h-2 rounded-full border" style="border-color:var(--text-dim)"></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- 项目2 -->
-                <div class="mb-16 grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">耀青市城建主设计、耀青市交通总设计</h3>
-                        <p class="text-lg mb-2">主力修建了耀青市地标建筑——<b>耀青殿</b>。设计并修建了竹泉镇、欧城欧堡、海洋高邸、枯坑矿井等奇观建筑。</p>
-                        <p class="text-lg">设计并建造了耀青市 <b>环中心城区线</b> 地铁、耀青市域轻轨铁路，以及搭建了耀青公交1线。</p>
-                    </div>
-                    <div class="relative w-full overflow-hidden rounded-xl shadow-2xl aspect-video">
-                        <div class="carousel-inner">
-                            <!-- 轮播图片1 -->
-                            <div class="carousel-item active">
-                                <img src="./image/Zhuquan_town.webp" alt="竹泉镇镇景" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">竹泉镇镇景</h3>
-                                    <p>竹泉镇已成为耀青市特色城镇之一</p>
-                                </div>
-                            </div>
-                            
-                            <!-- 轮播图片2 -->
-                            <div class="carousel-item">
-                                <img src="./image/Ou_castle.webp" alt="欧城欧堡一景" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">欧城欧堡一景</h3>
-                                    <p>摄于荒木酒馆</p>
-                                </div>
-                            </div>
-                            
-                            <!-- 轮播控制按钮 -->
-                            <button class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="prev">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                            <button class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="next">
-                                <i class="fa fa-chevron-right"></i>
-                            </button>
-                            
-                            <!-- 轮播指示器 -->
-                            <div class="absolute bottom-20 left-0 right-0 flex justify-center gap-2 z-20">
-                                <button class="carousel-indicator active" data-index="0"></button>
-                                <button class="carousel-indicator" data-index="1"></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- 项目3 -->
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h3 class="text-2xl font-bold mb-4">先遣聖潔基地总设计</h3>
-                        <p class="text-lg mb-2">全额修建了先遣聖潔基地（先潔基地）所有建筑。例如，先遣站点、圣泉池、全境最大的折跃门——<b>越界门</b> 等等。</p>
-                        <p class="text-lg">设计并修建了经过先潔基地的碉堡市地铁 <b>5号线</b>。</p>
-                    </div>
-                    <div class="relative w-full overflow-hidden rounded-xl shadow-2xl aspect-video">
-                        <div class="carousel-inner">
-                            <!-- 轮播图片1 -->
-                            <div class="carousel-item active">
-                                <img src="./image/Pre-Pure_base.webp" alt="先潔基地一景" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 text-white">
-                                    <h3 class="text-2xl font-bold mb-2">先潔基地一景</h3>
-                                    <p>摄于先潔基地折跃门附近</p>
-                                </div>
-                            </div>
-                            
-                            <!-- 轮播控制按钮 -->
-                            <button class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="prev">
-                                <i class="fa fa-chevron-left"></i>
-                            </button>
-                            <button class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 text-white flex items-center justify-center hover:bg-black/50 transition-all" data-action="next">
-                                <i class="fa fa-chevron-right"></i>
-                            </button>
-                            
-                            <!-- 轮播指示器 -->
-                            <div class="absolute bottom-20 left-0 right-0 flex justify-center gap-2 z-20">
-                                <button class="carousel-indicator active" data-index="0"></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 参与建设城市介绍 -->
-            <section class="py-12">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="text-center mb-12">
-                        <h2 class="text-4xl font-bold mb-4">参与建设城市介绍</h2>
-                        <p class="text-lg text-gray-600">自2024年来，隶属于 <b>Leon's Transit Company</b> 的 <br><b>Leon's Metro Transit</b> 和 <b>Leon's Rail Transit</b> 公司已参与了多个城市与地区的城建以及交通建设。</p>
-                    </div>
-
-                    <!-- 碉堡市 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12">
-                        <div>
-                            <h3 class="text-3xl font-bold mb-4">碉堡市</h3>
-                            <p class="text-gray-700 mb-4"><b>碉堡市</b>，因最初建造的一座小型碉堡而得名。<br>
-                            城市地处要塞般的地理位置，西北毗邻先洁基地，东北与耀青市隔岸相望。<br>
-                            随着城市的发展，以碉堡为中心，逐渐向四方延伸出独具特色的建筑群：北有高耸的十层信标金字塔与伊丽莎白塔大本钟，成为城市的地标性景观；西有银白色工业区，象征着科技与生产力；南有临海别墅群与铁路火车站，展现出碉堡市宜居与通达的一面；东临浩瀚水域，与耀青市遥相呼应。<br>
-                            如今的碉堡市，已成为一座集历史底蕴与现代活力于一体的城市。</p>
-                        </div>
-                        <div class="text-center">
-                            <img src="./image/Diaobao_main.webp" alt="碉堡市主视图" class="rounded-lg mb-4">
-                            <a href="./page/Diaobao.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">了解更多<b>碉堡市</b>的故事</a>
-                        </div>
-                    </div>
-
-                    <!-- 耀青市 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12">
-                        <div class="text-center md:order-2">
-                            <img src="./image/Yaoqing_main.webp" alt="耀青市主视图" class="rounded-lg mb-4">
-                            <a href="./page/Yaoqing.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">了解更多<b>耀青市</b>的故事</a>
-                        </div>
-                        <div class="md:order-1">
-                            <h3 class="text-3xl font-bold mb-4">耀青市</h3>
-                            <p class="text-gray-700 mb-4"><b>耀青市</b>，因恢宏庄严的耀青殿而得名，是一座兼具历史底蕴与现代活力的滨海城市。自最初的海边建筑群起步，城市逐步向东岸大陆拓展，形成了今日的广阔市域格局。<br>
-                            城市以“传承与创新并行，古典与现代共融”为建设理念，拥有诸多独特的地标：</p>
-                            <ul class="list-disc list-inside mb-4 text-gray-700">
-                                <li>耀青殿：城市文明的起点，亦是精神象征；</li>
-                                <li>枯坑矿井遗址：曾支撑城市兴起的经济命脉，如今成为见证时代变迁的工业遗迹展馆；</li>
-                                <li>城市中心定位信标：明耀光柱定位耀青市中心，四方各地皆望明。</li>
-                                <li>欧城区：因欧城欧堡的建成而崛起的新兴城区，风格独特，发展迅速。</li>
-                            </ul>
-                            <p class="text-gray-700">同时，耀青市拥有完善的交通网络：市域轻轨串联大陆海岸、竹泉与欧城，地铁环线与公交系统覆盖中心城区，形成便利的立体交通。<br>
-                            耀青市，历史与未来交汇，传统与现代共鸣，欢迎每一位旅人来此探寻她的独特魅力。</p>
-                        </div>
-                    </div>
-
-                    <!-- 先遣聖潔基地 -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h3 class="text-3xl font-bold mb-4">先遣聖潔基地</h3>
-                            <p class="text-gray-700"><b>先遣聖潔基地</b>，坐落于北部海岸，与碉堡市西北部接壤，是一座拥有特殊历史的直辖行政区。<br>
-                            城市最初因“先遣站点”而生，当地勇士们在此整装待发，踏入未知的下界开拓疆土。为了迎接凯旋的战士，城中修建了象征纯净与守护的<b>圣泉池</b>，战士们在此祈祷、沐浴，洗去下界的不祥之气。<br>
-                            在开拓胜利后，基地建成了全境最大的下界折跃门——<b>越界门</b>，一跃成为全景最富饶与繁盛的地区。随之崛起的<b>图书教堂</b>，融合了智慧与信仰，既是知识的殿堂，也是心灵的圣所，彰显了先遣圣洁基地独特的精神与文化底蕴。<br>
-                            今日的先遣聖潔基地，不仅是探索与财富的象征，更是圣洁与荣耀的灯塔。</p>
-                        </div>
-                        <div class="text-center md:order-2">
-                            <img src="./image/Pre-Pure_base_main.webp" alt="先遣聖潔基地主视图" class="rounded-lg mb-4">
-                            <a href="./page/Pre-PureBase.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">了解更多<b>耀青市</b>的故事</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-        
-            <!-- 未来展望 -->
-                    <div class="bg-black text-white p-12 text-center">
-                        <h2 class="text-4xl font-bold ">未来</h2>
-                        <h4 class="text-base font-bold mb-4">In the future,</h4>
-                        <p class="text-2xl">&nbsp;&nbsp;&nbsp;我们将参与更多……</p>
-                        <p class="text-base font-bold mb-4">we will collaborate on more......</p>
-                    </div>
-
-        <!-- 简化的页脚 -->
-        <footer class="bg-white border-t border-gray-200 py-8">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-                <p>&copy; 2024 Leeon's Site. All rights reserved.</p>
             </div>
-        </footer>
-    </div>
-    
-    <button id="backToTop" class="fixed bottom-8 right-8 bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all duration-300 opacity-0 pointer-events-none z-40" onclick="scrollToTop()">
+
+            <!-- Extension hint -->
+            <div class="text-center mt-12 reveal">
+                <div class="flex items-center justify-center gap-3" style="color:var(--text-dim)">
+                    <div style="width:30px;height:2px;background:var(--border)"></div>
+                    <div class="station-dot"></div>
+                    <div style="width:30px;height:2px;background:var(--border)"></div>
+                    <div class="station-dot"></div>
+                    <div style="width:30px;height:2px;background:var(--border)"></div>
+                    <div class="station-dot"></div>
+                    <div style="width:30px;height:2px;background:var(--border)"></div>
+                </div>
+                <p class="font-tech text-xs tracking-[0.2em] mt-4">MORE REGIONS COMING SOON</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Future -->
+    <section class="py-20 px-6 relative">
+        <div class="transit-line mb-16 max-w-4xl mx-auto"></div>
+        <div class="max-w-3xl mx-auto text-center reveal">
+            <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--amber)">── IN THE FUTURE ──</div>
+            <h2 class="font-tech text-3xl md:text-4xl font-bold mb-6 glow-amber tracking-wide" style="color:var(--amber)">未来</h2>
+            <p class="text-xl mb-2" style="color:var(--text-sec)">我们将参与更多世界的建设……</p>
+            <p class="font-tech text-xs tracking-[0.2em]" style="color:var(--text-dim)">WE WILL COLLABORATE ON MORE...</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6" style="background:var(--bg-primary);border-top:1px solid var(--border)">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <img width="32" height="32" src="./image/metro_logo_single.webp" alt="Logo">
+                <span class="font-tech text-xs tracking-widest" style="color:var(--text-sec)">LEEON'S</span>
+            </div>
+            <p class="font-tech text-xs tracking-wider" style="color:var(--text-dim)">&copy; 2024-2026 LEEON'S SITE. ALL RIGHTS NOT RESERVED.</p>
+        </div>
+    </footer>
+
+    <!-- Back to top -->
+    <button id="backToTop" class="fixed bottom-8 right-8 w-10 h-10 flex items-center justify-center transition-all duration-300 opacity-0 pointer-events-none z-40" style="background:var(--bg-card);border:1px solid var(--cyan-dim);color:var(--cyan)" onclick="window.scrollTo({top:0,behavior:'smooth'})">
         <i class="fa fa-chevron-up"></i>
     </button>
 
-    <!-- 简化的轮播图JavaScript -->
     <script>
-
-
-        function scrollToTop() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
-
-        window.addEventListener('scroll', function() {
-            const backToTop = document.getElementById('backToTop');
-            if (window.scrollY > 300) {
-                backToTop.classList.remove('opacity-0', 'pointer-events-none');
+        // Back to top visibility
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 400) {
+                btn.classList.remove('opacity-0','pointer-events-none');
             } else {
-                backToTop.classList.add('opacity-0', 'pointer-events-none');
+                btn.classList.add('opacity-0','pointer-events-none');
             }
         });
 
-        // 轮播图功能
-        document.addEventListener('DOMContentLoaded', function() {
-            const carousels = document.querySelectorAll('.carousel-inner');
-            
-            carousels.forEach(carousel => {
-                const items = carousel.querySelectorAll('.carousel-item');
-                const indicators = carousel.querySelectorAll('.carousel-indicator');
-                const prevBtn = carousel.querySelector('[data-action="prev"]');
-                const nextBtn = carousel.querySelector('[data-action="next"]');
-                
-                let currentIndex = 0;
-                const totalItems = items.length;
-                
-                // 初始化轮播
-                function initCarousel() {
-                    updateCarousel();
-                    // 自动轮播
-                    setInterval(() => {
-                        currentIndex = (currentIndex + 1) % totalItems;
-                        updateCarousel();
-                    }, 5000);
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
                 }
-                
-                // 更新轮播显示
-                function updateCarousel() {
-                    // 更新项目
-                    items.forEach((item, index) => {
-                        if (index === currentIndex) {
-                            item.classList.add('active');
-                        } else {
-                            item.classList.remove('active');
-                        }
-                    });
-                    
-                    // 更新指示器
-                    if (indicators.length > 0) {
-                        indicators.forEach((indicator, index) => {
-                            if (index === currentIndex) {
-                                indicator.classList.add('active');
-                            } else {
-                                indicator.classList.remove('active');
-                            }
-                        });
-                    }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                
-                // 前一张
-                if (prevBtn) {
-                    prevBtn.addEventListener('click', () => {
-                        currentIndex = (currentIndex - 1 + totalItems) % totalItems;
-                        updateCarousel();
-                    });
-                }
-                
-                // 后一张
-                if (nextBtn) {
-                    nextBtn.addEventListener('click', () => {
-                        currentIndex = (currentIndex + 1) % totalItems;
-                        updateCarousel();
-                    });
-                }
-                
-                // 指示器点击
-                indicators.forEach((indicator, index) => {
-                    indicator.addEventListener('click', () => {
-                        currentIndex = index;
-                        updateCarousel();
-                    });
-                });
-                
-                // 初始化
-                initCarousel();
             });
         });
     </script>
