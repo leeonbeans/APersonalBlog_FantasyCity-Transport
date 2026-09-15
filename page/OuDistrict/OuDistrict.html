@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>欧城市 · OU CITY | 城市志</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+    --ink:#16232a; --ink-2:#22343c; --ink-3:#3c5058;
+    --paper:#f5f1e8; --paper-2:#ede7d9; --card:#fbf9f3;
+    --gold:#b98a2e; --gold-bright:#d8a83c;
+    --river:#2e6f76; --river-deep:#1d4b52;
+    --line:rgba(22,35,42,.14);
+    --serif:'Noto Serif SC',serif; --sans:'Noto Sans SC',sans-serif; --latin:'Cormorant Garamond',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.9;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:#fff}
+
+/* top bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(245,241,232,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1200px;margin:0 auto;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{display:flex;align-items:baseline;gap:.6rem}
+.brand .zh{font-family:var(--serif);font-weight:900;font-size:1.15rem;letter-spacing:.12em}
+.brand .en{font-family:var(--latin);font-style:italic;font-size:.95rem;color:var(--gold);letter-spacing:.08em}
+.nav{display:flex;gap:1.4rem;font-size:.85rem;letter-spacing:.12em}
+.nav a{color:var(--ink-3);position:relative;padding:.2rem 0;transition:color .25s}
+.nav a:hover{color:var(--gold)}
+.nav a::after{content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--gold);transition:width .3s}
+.nav a:hover::after{width:100%}
+@media(max-width:900px){.nav{display:none}}
+
+/* hero */
+.hero{position:relative;min-height:92vh;display:flex;align-items:flex-end;overflow:hidden;color:#fff}
+.hero-bg{position:absolute;inset:0;background:url('../../image/OuDistrict/OuDistrict_main.png') center 38%/cover no-repeat;transform:scale(1.04);animation:heroZoom 18s ease-out forwards}
+@keyframes heroZoom{to{transform:scale(1)}}
+.hero-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,26,31,.28) 0%,rgba(13,26,31,.15) 40%,rgba(13,26,31,.86) 100%)}
+.hero-in{position:relative;z-index:2;max-width:1200px;margin:0 auto;width:100%;padding:7rem 1.5rem 4rem}
+.hero-kicker{font-family:var(--latin);font-style:italic;font-size:1.05rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:1rem}
+.hero h1{font-family:var(--serif);font-weight:900;font-size:clamp(3rem,9vw,6.5rem);line-height:1.05;letter-spacing:.06em;text-shadow:0 4px 40px rgba(0,0,0,.45)}
+.hero .sub{font-family:var(--latin);font-size:clamp(1.1rem,3vw,1.7rem);letter-spacing:.5em;color:rgba(255,255,255,.85);margin:.4rem 0 1.4rem}
+.hero .motto{font-family:var(--serif);font-size:clamp(1rem,2.4vw,1.35rem);font-weight:600;letter-spacing:.2em;color:rgba(255,255,255,.92);border-left:3px solid var(--gold-bright);padding-left:1rem;max-width:34rem}
+.hero-stats{display:flex;flex-wrap:wrap;gap:2.6rem;margin-top:2.6rem;padding-top:1.6rem;border-top:1px solid rgba(255,255,255,.25)}
+.hero-stats .n{font-family:var(--latin);font-size:2.2rem;font-weight:600;color:var(--gold-bright);line-height:1}
+.hero-stats .l{font-size:.78rem;letter-spacing:.22em;color:rgba(255,255,255,.75);margin-top:.35rem}
+.scroll-hint{position:absolute;right:1.6rem;bottom:2rem;z-index:2;writing-mode:vertical-rl;font-size:.72rem;letter-spacing:.4em;color:rgba(255,255,255,.6)}
+.scroll-hint::after{content:'';display:block;width:1px;height:52px;background:linear-gradient(var(--gold-bright),transparent);margin:.6rem auto 0}
+
+/* layout */
+.wrap{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+section{padding:5.5rem 0}
+.sec-head{display:flex;align-items:baseline;gap:1.2rem;margin-bottom:1rem;flex-wrap:wrap}
+.sec-no{font-family:var(--latin);font-style:italic;font-size:1rem;color:var(--gold);letter-spacing:.2em}
+.sec-head h2{font-family:var(--serif);font-weight:900;font-size:clamp(1.7rem,4.4vw,2.6rem);letter-spacing:.1em}
+.sec-head .en{font-family:var(--latin);font-style:italic;color:var(--ink-3);font-size:1rem;letter-spacing:.12em}
+.rule{height:1px;background:linear-gradient(90deg,var(--gold),var(--line) 60%,transparent);margin-bottom:2.6rem}
+.lede{font-family:var(--serif);font-size:1.12rem;font-weight:600;color:var(--ink-2);line-height:2;margin-bottom:1.4rem}
+.lede::first-letter{font-size:2.1em;color:var(--gold);float:left;line-height:1;margin-right:.12em;font-weight:900}
+p.body{color:var(--ink-3);margin-bottom:1.1rem;text-align:justify}
+p.body b{color:var(--ink);font-weight:700}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.on{opacity:1;transform:none}
+
+/* fact list (city card / district facts) */
+.facts{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.7rem 1.6rem;margin:1.6rem 0;padding:1.2rem 1.4rem;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold)}
+.facts li{display:flex;gap:.7rem;font-size:.88rem;align-items:baseline}
+.facts li span{flex:0 0 auto;font-size:.72rem;letter-spacing:.16em;color:var(--gold);border:1px solid var(--gold);padding:.05rem .45rem;border-radius:2px}
+.facts li b{color:var(--ink-2);font-weight:500}
+.dtransit{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:1rem;padding-top:.9rem;border-top:1px dashed var(--line)}
+.dt-cap{font-size:.72rem;letter-spacing:.16em;color:var(--ink-3);margin-right:.2rem}
+.lb{font-size:.72rem;letter-spacing:.06em;color:#fff;padding:.24rem .75rem;border-radius:999px}
+.lb.hub{background:transparent;color:var(--river-deep);border:1px solid var(--river)}
+
+/* windfall / produce list */
+.bounty{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.4rem}
+.bounty span{font-size:.8rem;letter-spacing:.1em;color:var(--river-deep);background:rgba(46,111,118,.1);border:1px solid rgba(46,111,118,.3);padding:.3rem .8rem;border-radius:999px}
+
+/* district explorer */
+.explorer{display:grid;grid-template-columns:236px 1fr;gap:2.2rem;align-items:start}
+.dindex{position:sticky;top:5.2rem;display:flex;flex-direction:column;gap:.25rem}
+.dbtn{display:flex;align-items:center;gap:.7rem;width:100%;text-align:left;background:none;border:none;border-left:3px solid transparent;padding:.6rem .8rem;cursor:pointer;font-family:var(--sans);transition:all .25s}
+.dbtn .dot{width:.6rem;height:.6rem;border-radius:50%;background:var(--ac);flex-shrink:0}
+.dbtn .nm{font-family:var(--serif);font-weight:600;font-size:.98rem;color:var(--ink-2);letter-spacing:.05em}
+.dbtn .nm small{display:block;font-family:var(--latin);font-style:italic;font-size:.7rem;color:var(--ink-3);letter-spacing:.06em}
+.dbtn:hover{background:rgba(22,35,42,.05)}
+.dbtn.on{border-left-color:var(--ac);background:var(--card)}
+.dbtn.on .nm{color:var(--ink)}
+.dpanel{display:none}
+.dpanel.on{display:block;animation:pin .5s cubic-bezier(.2,.7,.2,1)}
+@keyframes pin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.dpanel header{margin-bottom:1.2rem}
+.dpanel h3{font-family:var(--serif);font-weight:900;font-size:1.9rem;letter-spacing:.08em}
+.dpanel .en{font-family:var(--latin);font-style:italic;color:var(--ac);letter-spacing:.12em;margin:.1rem 0 .6rem}
+.dpanel .tag{display:inline-block;font-size:.7rem;letter-spacing:.16em;color:#fff;background:var(--ac);padding:.2rem .7rem;border-radius:2px}
+.pframe{position:relative;overflow:hidden;border-radius:6px;box-shadow:0 16px 44px rgba(22,35,42,.18);margin:1.2rem 0;aspect-ratio:16/9;background:#0d1a1f}
+.pframe img{width:100%;height:100%;object-fit:cover;cursor:zoom-in;transition:transform .6s ease}
+.pframe img:hover{transform:scale(1.03)}
+.pframe figcaption{position:absolute;left:0;right:0;bottom:0;padding:2rem 1.1rem .8rem;background:linear-gradient(to top,rgba(10,20,24,.85),transparent);color:#fff;font-size:.8rem;letter-spacing:.08em}
+.pframe.empty{border:2px dashed var(--ac);background:repeating-linear-gradient(45deg,rgba(22,35,42,.04) 0 12px,transparent 12px 24px);box-shadow:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;text-align:center;padding:1.5rem}
+.pframe.empty .ic{font-size:1.7rem;color:var(--ac)}
+.pframe.empty .t{font-family:var(--serif);font-weight:700;letter-spacing:.1em;color:var(--ink-2)}
+.pframe.empty .s{font-size:.8rem;color:var(--ink-3);max-width:30rem;line-height:1.8}
+@media(max-width:860px){
+    .explorer{grid-template-columns:1fr}
+    .dindex{position:static;flex-direction:row;overflow-x:auto;padding-bottom:.5rem;gap:.4rem}
+    .dbtn{flex:0 0 auto;border-left:none;border-bottom:3px solid transparent;border-radius:4px;background:var(--card)}
+    .dbtn.on{border-bottom-color:var(--ac)}
+}
+
+/* plates (skyline) */
+.plate{display:grid;grid-template-columns:1.15fr 1fr;gap:2.4rem;align-items:center;margin-bottom:4rem}
+.plate:nth-of-type(even) .pfig{order:2}
+.pfig img{width:100%;border-radius:6px;box-shadow:0 18px 50px rgba(22,35,42,.2);cursor:zoom-in}
+.pno{font-family:var(--latin);font-style:italic;color:var(--gold);letter-spacing:.24em;font-size:.85rem;margin-bottom:.4rem}
+.ptext h3{font-family:var(--serif);font-weight:700;font-size:1.5rem;letter-spacing:.06em;margin-bottom:.7rem}
+.ptext p{font-size:.95rem;color:var(--ink-3);text-align:justify;margin-bottom:.8rem}
+.plate.feat{display:block;margin-bottom:2rem}
+.plate.feat .pfig img{max-height:62vh;object-fit:cover}
+.plate.feat .ptext{max-width:54rem;margin-top:1.6rem}
+.feat-stats{display:flex;flex-wrap:wrap;gap:2.6rem;margin-top:1.4rem;padding-top:1.2rem;border-top:1px dashed var(--line)}
+.feat-stats .n{font-family:var(--latin);font-size:2rem;font-weight:600;color:var(--river);line-height:1}
+.feat-stats .l{font-size:.76rem;letter-spacing:.16em;color:var(--ink-3);margin-top:.3rem}
+@media(max-width:860px){.plate{grid-template-columns:1fr}.plate:nth-of-type(even) .pfig{order:0}}
+
+/* transit */
+.lines{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.9rem;margin-bottom:2.4rem}
+.line{display:flex;align-items:center;gap:.8rem;background:var(--card);border:1px solid var(--line);padding:.75rem .9rem;border-radius:4px;transition:transform .25s}
+.line:hover{transform:translateX(4px)}
+.line .sw{width:2.4rem;height:.55rem;border-radius:3px;flex-shrink:0}
+.line .nm{font-size:.9rem;font-weight:500;color:var(--ink-2)}
+.line .nm small{display:block;font-family:var(--latin);font-style:italic;font-size:.72rem;color:var(--ink-3);letter-spacing:.05em}
+.map-frame{border:1px solid var(--line);background:#fff;padding:.8rem;border-radius:6px;box-shadow:0 16px 45px rgba(22,35,42,.14)}
+.map-frame img{width:100%;cursor:zoom-in;border-radius:3px}
+.map-cap{text-align:center;font-size:.8rem;letter-spacing:.16em;color:var(--ink-3);padding:.7rem 0 .2rem}
+
+/* epilogue & footer */
+.epilogue{background:var(--ink);color:var(--paper);text-align:center}
+.epilogue .wrap{max-width:820px}
+.epilogue .q{font-family:var(--serif);font-weight:600;font-size:clamp(1.2rem,3.4vw,1.8rem);line-height:2;letter-spacing:.08em}
+.epilogue .sig{font-family:var(--latin);font-style:italic;color:var(--gold-bright);letter-spacing:.3em;margin-top:1.6rem;font-size:.95rem}
+footer{background:var(--ink-2);color:rgba(245,241,232,.7);padding:2.2rem 0}
+.foot-in{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between;font-size:.8rem;letter-spacing:.1em}
+.foot-in a{color:var(--gold-bright)}
+.foot-in a:hover{text-decoration:underline}
+
+/* modal & totop */
+.modal{position:fixed;inset:0;background:rgba(8,14,17,.93);z-index:80;display:none;align-items:center;justify-content:center;cursor:zoom-out;padding:2rem}
+.modal img{max-width:94%;max-height:92%;border-radius:4px;box-shadow:0 0 80px rgba(0,0,0,.6)}
+#toTop{position:fixed;right:1.6rem;bottom:1.6rem;z-index:70;width:2.8rem;height:2.8rem;border-radius:50%;border:1px solid var(--gold);background:var(--ink);color:var(--gold-bright);cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;font-size:1rem}
+#toTop.show{opacity:1;pointer-events:auto}
+#toTop:hover{background:var(--gold);color:#fff}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-in">
+        <div class="brand"><span class="zh">欧城市志</span><span class="en">Ou City Chronicle</span></div>
+        <nav class="nav">
+            <a href="#overview">概览</a>
+            <a href="#river">江河</a>
+            <a href="#history">沿革</a>
+            <a href="#districts">八区</a>
+            <a href="#skyline">风貌</a>
+            <a href="#transit">交通</a>
+            <a href="../../index.html">返回主页</a>
+        </nav>
+    </div>
+</div>
+
+<header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-veil"></div>
+    <div class="hero-in">
+        <div class="hero-kicker">Metropolis of the River Delta</div>
+        <h1>欧城市</h1>
+        <div class="sub">OU&nbsp;CITY</div>
+        <p class="motto">一江分四域，一岛定中枢。<br>江水流处，皆是繁华。</p>
+        <div class="hero-stats">
+            <div><div class="n">8</div><div class="l">行政分区</div></div>
+            <div><div class="n">10</div><div class="l">轨交线路</div></div>
+            <div><div class="n">4</div><div class="l">江域陆块</div></div>
+            <div><div class="n">1</div><div class="l">中心之岛</div></div>
+        </div>
+    </div>
+    <div class="scroll-hint">SCROLL</div>
+</header>
+
+<!-- 01 overview -->
+<section id="overview">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 01</span><h2>城市概览</h2><span class="en">Overview</span></div>
+        <div class="rule"></div>
+        <p class="lede">欧城市（Ou City），方域大陆之上一座被江水温柔环抱、亦被江水彻底塑造的现代大都会，市民亦爱以"江心都会""欧江明珠"称之。</p>
+        <p class="body">从高空俯瞰，欧城市是一枚近乎完美的<b>方形印章</b>，钤盖在江流与沃野之间。一条大江自城中穿过，将城市大致剖为四块陆域——<b>北岸、西岸、以及相连的南与东</b>——而江心处，一座岛屿静卧其中，如同整座城市的心脏。这便是<b>欧岛新区</b>，今日欧城市最璀璨的中央商务区。</p>
+        <p class="body">地理的分割并未让城市支离，反而催生了极高的营造智慧：桥梁飞架、隧道穿江、轨道织网，四块陆域与中心岛被缝合为一个呼吸与共的整体。于是欧城市既有<b>老城区</b>的烟火与历史，又有<b>中心岛</b>的玻璃幕墙与不夜灯火；既有<b>城中村</b>的熙攘人情，又有<b>工业园区</b>的洁白秩序，更有<b>能源之区</b>为全城输送不竭的光与热。</p>
+        <p class="body">这是一座<b>盛大而繁荣</b>的城市。白日里江面舟影与桥上车流相映，入夜后中心岛的灯红酒绿倒映入江，与南岸工业园区点点路灯、北岸新城的温润光晕共同铺展成一幅流动的城市长卷。</p>
+        <ul class="facts">
+            <li><span>别称</span><b>江心都会 · 欧江明珠</b></li>
+            <li><span>江河</span><b>欧江</b></li>
+            <li><span>市树</span><b>欧江柳</b></li>
+            <li><span>市花</span><b>白玉兰</b></li>
+            <li><span>市植</span><b>欧城茄</b></li>
+            <li><span>格言</span><b>江水流处，皆是繁华</b></li>
+        </ul>
+    </div>
+</section>
+
+<!-- 02 river & land -->
+<section id="river" style="background:var(--paper-2)">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 02</span><h2>江河与土地</h2><span class="en">The River &amp; The Land</span></div>
+        <div class="rule"></div>
+        <p class="lede">欧城市的命脉，是一条被市民唤作"玉带"的江——欧江。江予城以形，亦予城以食、以电、以景。</p>
+        <p class="body"><b>欧江</b>自西北苍梧山麓发源，携雪水与山泉缓行数百里，至欧城市域时豁然开阔。因流域植被丰茂、水土保持极佳，江水<b>含沙量极低</b>，四时澄澈，水色青碧如玉，故得俗名<b>"玉带江"</b>。欧江为<b>感潮河段</b>，一日两潮，潮涨时江面微升、桥影随波；又因水温温和，<b>冬不封冻</b>，全年通航，是城市最早的道路，也是最古老的商路。</p>
+        <p class="body">江行至城心，洲滩百年淤积、合围成<b>欧岛</b>；江水分而为二：<b>北汊"鸣澜汊"</b>槽深水急，是主航道所在，跨江桥隧最密，货轮与渡轮往来如织；<b>南汊"静水汊"</b>浅缓多滩，芦苇连天、候鸟翔集，是城市珍藏的一片湿地。一急一缓、一商一野，同一条江在城市怀里展现出两副面孔。</p>
+        <p class="body">欧城市晨昏多雾，市民称之为<b>"欧江雾"</b>。雾起时，中心岛的玻璃塔楼半隐半现，江面灯影被揉碎成万点金鳞——"雾锁欧岛"由此列为欧城市最负盛名的景致，也是无数摄影者守候一生的画面。</p>
+        <p class="body">欧江亦慷慨馈赠：<b>江鲜</b>以北汊晨捕的欧江鲥鱼、白玉鲳为贵，是老城食肆的招牌；北岸沃野一年两熟，所产<b>"欧北香米"</b>粒粒油亮；南汊<b>芦苇</b>织席造纸，养活两岸人家；静水汊湿地为<b>候鸟</b>驿站，北欧区沿滩设观鸟栈道；岛南的<b>"澜心闸"</b>以径流式水电并入电网，为赋工区调峰补能。</p>
+        <div class="bounty">
+            <span>欧江鲥鱼</span><span>白玉鲳</span><span>欧北香米</span><span>南汊芦苇</span><span>湿地候鸟</span><span>澜心水电</span><span>欧江雾</span>
+        </div>
+    </div>
+</section>
+
+<!-- 03 history -->
+<section id="history">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 03</span><h2>历史沿革</h2><span class="en">From Ferry to Metropolis</span></div>
+        <div class="rule"></div>
+        <p class="lede">从一处江渡，到一座都会——欧城市的历史，是一部"由渡而市、由岛而心"的扩张史。</p>
+        <p class="body">城市的最早聚落在南岸渡口<b>"欧渡"</b>（今欧市区一带）。彼时江宽舟稀，摆渡是唯一通途，渡口旁渐生集市、客栈与仓房，人烟辐辏，遂成老城雏形。今日欧市区残存的老街、市集与临江石阶，便是那段"以渡立市"岁月留下的胎记。</p>
+        <p class="body">江心的沙洲经百年淤积，渐渐合围成<b>欧岛</b>。岛上最初只有船坞、缆桩与货栈，江雾里桅樯林立、号子相闻，是城市的"水上工场"。谁也不曾想到，这片泊船之地，日后会成为整座城市跳动的心脏。</p>
+        <p class="body">近代以来，欧城市填岛立市，在欧岛之上建起<b>欧岛新区</b>中央商务区；桥隧成网，缝合四域。南部辟<b>工业园区</b>，以制造立身；东南立<b>赋工区</b>，以能源立命；西部因移民潮而屋舍栉比，形成烟火稠密的<b>西城区</b>；北部由旧工业转型为讲究设计与绿能的<b>北欧区</b>；东岸则拔地而起<b>市东城区</b>，与中心岛隔江辉映。</p>
+        <p class="body">及至当代，轨交十线成网、<b>Countryside Green</b> 八线交汇，欧城市彻底告别"隔江相望"的年代，成长为名符其实的<b>江心都会</b>。渡口早已不再，但"欧渡"之名仍被老城人挂在嘴边——它提醒着这座城市：一切繁华，皆始于一次摆渡。</p>
+    </div>
+</section>
+
+<!-- 04 districts explorer -->
+<section id="districts" style="background:var(--paper-2)">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 04</span><h2>八区志</h2><span class="en">The Eight Districts</span></div>
+        <div class="rule"></div>
+        <p class="lede">以中心岛为原点，八方各区各司其职。点选左侧区名，展读该区志略。</p>
+
+        <div class="explorer">
+            <div class="dindex" role="tablist">
+                <button class="dbtn on" style="--ac:#c9a227" data-target="d-island"><span class="dot"></span><span class="nm">欧岛新区<small>Ou Island New District</small></span></button>
+                <button class="dbtn" style="--ac:#3f8f5f" data-target="d-north"><span class="dot"></span><span class="nm">北欧区<small>Ou North District</small></span></button>
+                <button class="dbtn" style="--ac:#2e6f76" data-target="d-westland"><span class="dot"></span><span class="nm">西陆区<small>West Land District</small></span></button>
+                <button class="dbtn" style="--ac:#a06a3a" data-target="d-citywest"><span class="dot"></span><span class="nm">西城区<small>City West District</small></span></button>
+                <button class="dbtn" style="--ac:#a34a3a" data-target="d-urban"><span class="dot"></span><span class="nm">欧市区<small>Ou Urban District</small></span></button>
+                <button class="dbtn" style="--ac:#8a929c" data-target="d-industry"><span class="dot"></span><span class="nm">工业园区<small>Industrial Area</small></span></button>
+                <button class="dbtn" style="--ac:#d97b29" data-target="d-endow"><span class="dot"></span><span class="nm">赋工区<small>Endow Industrial Area</small></span></button>
+                <button class="dbtn" style="--ac:#3a6ea5" data-target="d-cityeast"><span class="dot"></span><span class="nm">市东城区<small>City East District</small></span></button>
+            </div>
+
+            <div class="dpanels">
+                <!-- 欧岛新区 -->
+                <article class="dpanel on" id="d-island" style="--ac:#c9a227">
+                    <header><h3>欧岛新区</h3><div class="en">Ou Island New District</div><span class="tag">市中心 · CBD</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/OuIslandNewDistrict.png" alt="欧岛新区 CBD 主视图" onclick="showModal(this)"><figcaption>欧岛新区 · 中轴广场向江面舒展，玻璃塔楼环伺</figcaption></figure>
+                    <p class="body">踞于中心岛之上，是欧城市当之无愧的<b>中央商务区</b>与城市门面。昔日的船坞货栈之地，今日玻璃幕墙的写字楼群沿江岸拔地而起，中轴广场绿意盎然，商业综合体与总部经济在此汇聚。</p>
+                    <p class="body">若说老城是欧城市的记忆，欧岛新区便是欧城市的现在与未来——繁华、高效、昼夜不息。"欧岛新区线"环行全岛，将每一座塔楼纳入轨道的脉搏。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>中心岛</b></li>
+                        <li><span>面积</span><b>46 平方公里</b></li>
+                        <li><span>人口</span><b>常住 68 万</b></li>
+                        <li><span>区治</span><b>中轴广场</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#2FE0D0">东西快线</span>
+                        <span class="lb" style="background:#1878F0">南北连接线</span>
+                        <span class="lb" style="background:#B018F0">欧岛新区线</span>
+                        <span class="lb" style="background:#F01818">市东城区线</span>
+                        <span class="lb" style="background:#E0D018">欧区贯通线</span>
+                        <span class="lb" style="background:#B8B8B8;color:#22303a">市域轻轨</span>
+                    </div>
+                </article>
+
+                <!-- 北欧区 -->
+                <article class="dpanel" id="d-north" style="--ac:#3f8f5f">
+                    <header><h3>北欧区</h3><div class="en">Ou North District</div><span class="tag">设计之都 · 绿色能源</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/OuNorthDistrict.png" alt="北欧区山水公园与艺术居民楼" onclick="showModal(this)"><figcaption>北欧区 · 山水公园畔覆绿退台的艺术居民楼，远处风机与光伏相映</figcaption></figure>
+                    <p class="body">位于中心岛以北，是欧城市最讲究<b>设计美学</b>与<b>绿色能源</b>的城区。山水公园星罗棋布，艺术居民楼依水而建、层层退台、覆满植被，将居住本身变成一件公共艺术品。</p>
+                    <p class="body">区内大力布局清洁能源与创意产业，屋顶光伏与江畔风机相映；静水汊湿地观鸟栈道亦由本区养护。北欧区是整座城市的"绿肺"与"美学客厅"。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>欧城市北面</b></li>
+                        <li><span>面积</span><b>88 平方公里</b></li>
+                        <li><span>人口</span><b>常住 74 万</b></li>
+                        <li><span>区治</span><b>绿汀湾</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#2FE0D0;">东西快线</span>
+                        <span class="lb" style="background:#F01A70">北欧线</span>
+                        <span class="lb" style="background:#F07818">西陆线</span>
+                        <span class="lb" style="background:#1878F0">南北连接线</span>
+                        <span class="lb" style="background:#E0D018">欧城贯通线</span>
+                    </div>
+                </article>
+
+                <!-- 西陆区 -->
+                <article class="dpanel" id="d-westland" style="--ac:#2e6f76">
+                    <header><h3>西陆区</h3><div class="en">West Land District</div><span class="tag">西部门户</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/WestLandDistrict.png" alt="西陆区跨江大桥西端与滨水岸线" onclick="showModal(this)"><figcaption>西陆区 · 跨江大桥西端引桥掠江而来，仓储堆场与滨水居住带沿岸并行</figcaption></figure>
+                    <p class="body">占据西部陆块的主体，是欧城市面向西向腹地的<b>门户之区</b>。江岸线开阔，仓储物流与滨水居住带并行发展，多条轨道线路由此进出中心岛。</p>
+                    <p class="body">西陆区承担着城市西向通勤与物资集散的重任，"西陆区线"沿江西行，把腹地的谷物、建材与人流源源送入都会。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>欧城市西部大陆</b></li>
+                        <li><span>面积</span><b>74 平方公里</b></li>
+                        <li><span>人口</span><b>常住 61 万</b></li>
+                        <li><span>区治</span><b>西津口</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#F07818">西陆线</span>
+                        <span class="lb" style="background:#2FE0D0;">东西快线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                    </div>
+                </article>
+
+                <!-- 西城区 -->
+                <article class="dpanel" id="d-citywest" style="--ac:#a06a3a">
+                    <header><h3>西城区</h3><div class="en">City West District</div><span class="tag">城中村 · 高人气</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/CityWestDistrict.png" alt="西城区城中村窄巷夜景" onclick="showModal(this)"><figcaption>西城区 · 入夜城中村窄巷，食肆蒸腾的暖光是最踏实的人间烟火</figcaption></figure>
+                    <p class="body">位于西南侧，是欧城市<b>人口最稠密</b>的区域之一。老式城区与城中村交织，街巷狭窄却生机勃勃，食肆、作坊、出租屋与小型商铺层层叠叠。</p>
+                    <p class="body">这里算不上灯红酒绿的繁华，却有着最踏实、最滚烫的市井烟火，是无数新欧城市人落脚生根的第一站。枢纽站 <b>Sodiyoa W.</b> 将这片烟火与中心岛紧紧相连。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>欧城市西南侧，包含西部大陆部分以及南部大陆部分</b></li>
+                        <li><span>面积</span><b>39 平方公里</b></li>
+                        <li><span>人口</span><b>常住 118 万</b></li>
+                        <li><span>区治</span><b>西巷口</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#2FE0D0;">东西快线</span>
+                        <span class="lb" style="background:#F07818">西陆线</span>
+                        <span class="lb" style="background:#B018F0">欧岛新区线</span>
+                        <span class="lb" style="background:#18C030">欧市区线</span>
+                        <span class="lb" style="background:#101010">工业园区线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                    </div>
+                </article>
+
+                <!-- 欧市区 -->
+                <article class="dpanel" id="d-urban" style="--ac:#a34a3a">
+                    <header><h3>欧市区</h3><div class="en">Ou Urban District</div><span class="tag">老城区 · 历史底蕴</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/CountrysideGreen.png" alt="欧市区 Countryside Green 枢纽夜景" onclick="showModal(this)"><figcaption>欧市区 · Countryside Green 枢纽，雨夜霓虹中高架轻轨掠过</figcaption></figure>
+                    <p class="body">中心岛以南的<b>老城区</b>，欧城市历史的发源地，"欧渡"故址所在。虽"老"，却管理有条、秩序井然：历史建筑被悉心修缮，老街旧巷干净整洁，博物馆、老市集与古树名木散落其间。</p>
+                    <p class="body">欧市区用从容的节奏，守护着整座城市最厚重的记忆与体面；而区内最大的枢纽 <b>Countryside Green</b>，又以八线交汇的现代姿态，把老城稳稳接入都会的脉搏。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>中心岛以南</b></li>
+                        <li><span>面积</span><b>52 平方公里</b></li>
+                        <li><span>人口</span><b>常住 96 万</b></li>
+                        <li><span>区治</span><b>欧渡老街</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#1878F0">南北连接线</span>
+                        <span class="lb" style="background:#F01818">市东城区线</span>
+                        <span class="lb" style="background:#18C030">欧市区线</span>
+                        <span class="lb" style="background:#101010">工业园区线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                        <span class="lb" style="background:#B8B8B8;color:#22303a">市域轻轨</span>
+                    </div>
+                </article>
+
+                <!-- 工业园区 -->
+                <article class="dpanel" id="d-industry" style="--ac:#8a929c">
+                    <header><h3>工业园区</h3><div class="en">Industrial Area</div><span class="tag">智造基地 · 洁白一体</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/IndustrialArea_main.png" alt="工业园区主视图" onclick="showModal(this)"><figcaption>工业园区 · 暮色中浅色厂房与亮灯办公楼安静伫立</figcaption></figure>
+                    <p class="body">欧市区再往南，是一片<b>洁白一体</b>的现代工业园区。厂房以统一的浅白色调整齐排布，道路宽阔、绿化规整，聚焦高端制造与加工产业。</p>
+                    <p class="body">入夜后园区归于安静，唯有路灯点点，与北望中心岛的璀璨灯火形成鲜明而诗意的对照。"工业园区线"与 <b>Soa Edge</b> 站，是这片洁白秩序的交通锚点。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>欧市区以南</b></li>
+                        <li><span>面积</span><b>63 平方公里</b></li>
+                        <li><span>人口</span><b>常住 24 万</b></li>
+                        <li><span>区治</span><b>白屿</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#1878F0">南北连接线</span>
+                        <span class="lb" style="background:#18C030">欧市区线</span>
+                        <span class="lb" style="background:#101010">工业园区线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                        <span class="lb" style="background:#B8B8B8;color:#22303a">市域轻轨</span>
+                    </div>
+                </article>
+
+                <!-- 赋工区 -->
+                <article class="dpanel" id="d-endow" style="--ac:#d97b29">
+                    <header><h3>赋工区</h3><div class="en">Endow Industrial Area</div><span class="tag">能源中心</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/EndowIndustrialArea.png" alt="赋工区能源工业夜景" onclick="showModal(this)"><figcaption>赋工区 · 蓝调时刻的能源之丘：冷却塔、核电安全壳与风机阵同框</figcaption></figure>
+                    <p class="body">位于工业园区之东、中心岛之东南，是欧城市的<b>能源心脏</b>。与工业园区的"制造"不同，赋工区主攻<b>能源工业</b>：火力、风力、水力乃至核能发电及其配套产业在此集群布局。</p>
+                    <p class="body">从澜心闸的径流水电，到江畔风机与远郊核电，赋工区为全城昼夜运转输送不竭的电力与热力，是欧城市繁荣背后沉默的引擎。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>中心岛东南</b></li>
+                        <li><span>面积</span><b>57 平方公里</b></li>
+                        <li><span>人口</span><b>常住 19 万</b></li>
+                        <li><span>区治</span><b>炬台</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#F01818">市东城区线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                        <span class="lb" style="background:#101010">工业园区线</span>
+                        <span class="lb" style="background:#B8B8B8;color:#22303a">市域轻轨</span>
+                    </div>
+                </article>
+
+                <!-- 市东城区 -->
+                <article class="dpanel" id="d-cityeast" style="--ac:#3a6ea5">
+                    <header><h3>市东城区</h3><div class="en">City East District</div><span class="tag">东岸新城</span></header>
+                    <figure class="pframe"><img src="../../image/OuDistrict/CityEastDistrict.png" alt="市东城区滨江天际线夜景" onclick="showModal(this)"><figcaption>市东城区 · 滨江休闲带蜿蜒入夜，隔江回望中心岛天际线</figcaption></figure>
+                    <p class="body">中心岛以东的<b>东岸城区</b>，与欧岛新区隔江相望、互为表里。承接中心岛的外溢功能，布局居住、商务与滨江休闲带。</p>
+                    <p class="body">市东城区是观赏中心岛天际线与江景夜色的绝佳看台，也是近年成长最快的新兴城区之一；"市东城区线"沿江岸南北贯穿，把东岸的窗与岛上的灯连成一线。</p>
+                    <ul class="facts">
+                        <li><span>方位</span><b>中心岛以东</b></li>
+                        <li><span>面积</span><b>68 平方公里</b></li>
+                        <li><span>人口</span><b>常住 82 万</b></li>
+                        <li><span>区治</span><b>东岸里</b></li>
+                    </ul>
+                    <div class="dtransit"><span class="dt-cap">轨道交通</span>
+                        <span class="lb" style="background:#2FE0D0;">东西快线</span>
+                        <span class="lb" style="background:#F01A70">北欧线</span>
+                        <span class="lb" style="background:#1878F0">南北连接线</span>
+                        <span class="lb" style="background:#F01818">市东城区线</span>
+                        <span class="lb" style="background:#E0D018;">欧城贯通线</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 05 skyline plates -->
+<section id="skyline">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 05</span><h2>城市风貌</h2><span class="en">Plates of the City</span></div>
+        <div class="rule"></div>
+        <p class="lede">四帧图版，四种欧城市的面孔：都会的、秩序的、沉默的、与不夜的。</p>
+
+        <div class="plate">
+            <figure class="pfig"><img src="../../image/OuDistrict/OuIslandNewDistrict.png" alt="欧岛新区 CBD 主视图" onclick="showModal(this)"></figure>
+            <div class="ptext">
+                <div class="pno">PLATE I</div>
+                <h3>欧岛新区 · 都会之面</h3>
+                <p>中轴广场自江岸向内陆舒展，两侧玻璃塔楼如帆如幕。白日里车流与人流在中轴交汇，入夜后整片天际线倒映入江，是欧城市最广为流传的一张"城市名片"。</p>
+            </div>
+        </div>
+
+        <div class="plate">
+            <figure class="pfig"><img src="../../image/OuDistrict/IndustrialArea_main.png" alt="工业园区主视图" onclick="showModal(this)"></figure>
+            <div class="ptext">
+                <div class="pno">PLATE II</div>
+                <h3>工业园区 · 洁白秩序</h3>
+                <p>暮色四合，浅白色的厂房群在路灯下安静伫立，办公楼的玻璃盒子里仍亮着灯。没有喧嚣的烟囱，只有整齐的线条与克制的色彩——这是欧城市"制造"二字的现代写法。</p>
+            </div>
+        </div>
+
+        <div class="plate">
+            <figure class="pfig"><img src="../../image/OuDistrict/IndustrialAreaSoaEdge.png" alt="工业园区 Soa Edge 站" onclick="showModal(this)"></figure>
+            <div class="ptext">
+                <div class="pno">PLATE III</div>
+                <h3>Soa Edge · 厂区之锚</h3>
+                <p>弧形玻璃站体嵌入洁白厂区，像一枚别在工装上的银扣。"工业园区线"在此停驻，把清晨的工人与深夜的加班者，准时送抵每一栋厂房门前。</p>
+            </div>
+        </div>
+
+        <div class="plate feat">
+            <figure class="pfig"><img src="../../image/OuDistrict/CountrysideGreen.png" alt="欧市区 Countryside Green 站夜景" onclick="showModal(this)"></figure>
+            <div class="ptext">
+                <div class="pno">PLATE IV · FEATURED</div>
+                <h3>Countryside Green · 八线交汇之城枢</h3>
+                <p>欧市区最大的地铁枢纽，其也是全市最大的交通枢纽<b>Countryside Green</b>，是整座欧城市轨交网络的心脏。雨夜霓虹里，一列高架轻轨掠光而过，站厅玻璃映出候车者的剪影——这是欧城市最动人的一幕都市夜景。</p>
+                <p>站在此处：北望，是欧岛新区灯红酒绿的繁华天际；南眺，是入夜后仅余点点路灯、烟火渐歇的工业园区；而脚下与身侧，便是欧市区散落的历史建筑与老街温度。一站之间，望尽一座城市的过去、现在与未来。</p>
+                <div class="feat-stats">
+                    <div><div class="n">7</div><div class="l">条地铁线在此交汇</div></div>
+                    <div><div class="n">1</div><div class="l">条高架轻轨线在此交汇</div></div>
+                    <div><div class="n">3</div><div class="l">种城市面貌在此同框</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 06 transit -->
+<section id="transit" style="background:var(--paper-2)">
+    <div class="wrap rv">
+        <div class="sec-head"><span class="sec-no">Chapter 06</span><h2>轨道交通</h2><span class="en">Metro &amp; Rail</span></div>
+        <div class="rule"></div>
+        <p class="lede">十线织网，跨江穿岛——轨道是欧城市缝合四域的真正纽带。</p>
+        <p class="body">欧城市建有发达的地铁与铁路系统，共<b>九条地铁线路</b>与<b>一条高架轻轨</b>，环岛、穿江、贯城，将八大行政区紧密相连。其中<b>欧区贯通线</b>纵贯南北、<b>东西快线</b>横连东西，构成城市骨架；<b>欧岛新区线</b>环中心岛而行，服务 CBD 通勤；而<b>高架轻轨</b>则凌空掠过欧市区上空，为老城增添一道流动的风景。</p>
+        <div class="lines">
+            <div class="line"><span class="sw" style="background:#2FE0D0"></span><span class="nm">东西快线<small>West-East Rapid Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#F01A70"></span><span class="nm">北欧线<small>Ou North District Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#F07818"></span><span class="nm">西陆线<small>West Land Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#1878F0"></span><span class="nm">南北连接线<small>North-South Connect Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#B018F0"></span><span class="nm">欧岛新区线<small>Ou Island New District Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#F01818"></span><span class="nm">市东城区线<small>City East District Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#18C030"></span><span class="nm">欧市区线<small>Ou Urban Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#101010"></span><span class="nm">工业园区线<small>Industrial Area Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#E0D018"></span><span class="nm">欧城贯通线<small>Ou District through Line</small></span></div>
+            <div class="line"><span class="sw" style="background:#B8B8B8"></span><span class="nm">市域轻轨<small>High Railway</small></span></div>
+        </div>
+        <div class="map-frame">
+            <img src="../../image/OuDistrict/OuDistrictRailSystemMap.png" alt="欧城市轨道交通线路图" onclick="showModal(this)">
+            <div class="map-cap">OU DISTRICT METRO &amp; RAIL SYSTEM MAP · 欧城市地铁及铁路线网图</div>
+        </div>
+    </div>
+</section>
+
+<section class="epilogue">
+    <div class="wrap rv">
+        <p class="q">江水分开了土地，<br>却从未分开这座城。<br>桥与轨、岛与岸、旧与新——<br>欧城市，把每一条江流，都过成了自己的路。</p>
+        <div class="sig">— OU CITY CHRONICLE —</div>
+    </div>
+</section>
+
+<footer>
+    <div class="foot-in">
+        <span>欧城市志 · OU CITY CHRONICLE</span>
+        <span><a href="../Fangyu.html">返回方域大陆</a> &nbsp;|&nbsp; <a href="../../index.html">返回主页</a></span>
+        <span>&copy; 2026 Leeon's Site. All rights not reserved.</span>
+    </div>
+</footer>
+
+<div class="modal" id="modal" onclick="hideModal()"><img id="modalImg" alt=""></div>
+<button id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#10093;</button>
+
+<script>
+// modal
+function showModal(img){var m=document.getElementById('modal'),i=document.getElementById('modalImg');m.style.display='flex';i.src=img.src;i.alt=img.alt;document.body.style.overflow='hidden'}
+function hideModal(){document.getElementById('modal').style.display='none';document.body.style.overflow=''}
+window.addEventListener('click',function(e){if(e.target===document.getElementById('modal'))hideModal()});
+
+// district explorer
+document.querySelectorAll('.dbtn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+        document.querySelectorAll('.dbtn').forEach(function(b){b.classList.toggle('on',b===btn)});
+        document.querySelectorAll('.dpanel').forEach(function(p){p.classList.toggle('on',p.id===btn.dataset.target)});
+    });
+});
+
+// reveal on scroll
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.12});
+document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
+
+// back to top
+window.addEventListener('scroll',function(){document.getElementById('toTop').classList.toggle('show',window.scrollY>500)});
+</script>
+</body>
+</html>
