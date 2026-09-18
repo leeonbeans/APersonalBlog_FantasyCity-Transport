@@ -998,8 +998,9 @@ function bindEvents(){
 }
 
 // ============ 初始化 ============
-// 预加载所有音频序列用到的文件：避免首次播放因音频未就绪（status='loading'）被跳过
-function preloadAllAudio(){
+// 预加载所有会播放的音频文件：避免首次播放因音频未就绪（status='loading'）被跳过。
+// 返回 Promise：全部缓冲完成（或加载失败）时 resolve；onProgress(done,total) 用于加载动画进度。
+function preloadAllAudio(onProgress){
   const files = new Set();
   // 开关门音频在停站阶段播放（不在序列里），必须单独预加载，否则首次发车时仍在 loading 被跳过
   files.add('door_open.mp3');
@@ -1007,12 +1008,78 @@ function preloadAllAudio(){
   Object.values(AUDIO_SEQUENCES).forEach(seq => {
     (seq || []).forEach(item => { if(item && item !== 'wait') files.add(item); });
   });
-  files.forEach(f => audio.getOrLoad(f));
+  // “即将到达”广播由区间独立触发（不在序列里），同样需要预加载
+  Object.values(APPROACHING_AUDIO).forEach(f => { if(f) files.add(f); });
+
+  const clips = Array.from(files).map(f => audio.getOrLoad(f));
+
+  return new Promise(resolve => {
+    // 背景音 running.mp3 一并纳入缓冲统计（“所有东西都缓冲完”）
+    const targets = clips.map(c => c.audio).concat([audio.bg]);
+    const total = targets.length;
+    if(total === 0){ resolve(); return; }
+    let done = 0;
+    const bump = () => {
+      done++;
+      if(onProgress) onProgress(done, total);
+      if(done >= total) resolve();
+    };
+    targets.forEach(a => {
+      if(!a){ bump(); return; }
+      if(a.readyState >= 4){ bump(); return; }   // HAVE_ENOUGH_DATA：已可直接播放
+      let settled = false;
+      const finish = () => { if(settled) return; settled = true; cleanup(); bump(); };
+      const cleanup = () => {
+        a.removeEventListener('canplaythrough', finish);
+        a.removeEventListener('error', finish);
+      };
+      a.addEventListener('canplaythrough', finish);
+      a.addEventListener('error', finish);
+    });
+  });
 }
+
+// 加载动画：统计缓冲进度，全部就绪（或超时兜底）后淡出遮罩、恢复正常界面
+function runLoader(){
+  const overlay = document.getElementById('loader-overlay');
+  const bar = document.getElementById('loader-bar-fill');
+  const pct = document.getElementById('loader-pct');
+  // 若遮罩不存在，仍执行预加载（保留原有防静默能力）
+  if(!overlay){ preloadAllAudio(); return; }
+
+  const setProgress = (done, total) => {
+    const p = total ? Math.min(100, Math.round(done / total * 100)) : 100;
+    if(bar) bar.style.width = p + '%';
+    if(pct) pct.textContent = p + '%';
+  };
+
+  const MAX_WAIT = 8000;  // 超时兜底：个别文件卡住也不会一直转圈，8s 后强制进入
+  const ready = preloadAllAudio(setProgress).then(() => 'ready');
+  const timeout = new Promise(res => setTimeout(() => res('timeout'), MAX_WAIT));
+
+  Promise.race([ready, timeout]).then((which) => {
+    setProgress(1, 1);
+    overlay.classList.add('done');
+    setTimeout(() => { overlay.style.display = 'none'; }, 650);
+    // 仅当“超时兜底”触发（资源未全部就绪）时，提示网络超时
+    if(which === 'timeout') showNetTimeout();
+  });
+}
+
+// 顶部居中红色提示框：“网络请求超时”（6s 后自动收起，可手动关闭）
+function showNetTimeout(){
+  const toast = document.getElementById('net-toast');
+  if(!toast) return;
+  toast.classList.add('show');
+  const hide = () => toast.classList.remove('show');
+  const closeBtn = document.getElementById('net-toast-close');
+  if(closeBtn) closeBtn.addEventListener('click', hide, { once:true });
+  setTimeout(hide, 6000);
+}
+
 function init(){
   cacheDom();
   audio.setVolume(state.volume);
-  preloadAllAudio();
   computeRouteGeometry();
   buildBigRoute();
   buildPidsStrip();
@@ -1022,6 +1089,7 @@ function init(){
   bindEvents();
   startClock();
   requestAnimationFrame(tick);
+  runLoader();   // 加载动画：等资源缓冲完成后再淡出，露出正常界面
 }
 
 init();

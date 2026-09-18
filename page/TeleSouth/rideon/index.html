@@ -8,6 +8,33 @@
 </head>
 <body>
 
+<!-- ============ 加载缓冲遮罩（资源就绪后淡出） ============ -->
+<div class="loader-overlay" id="loader-overlay">
+  <div class="loader-inner">
+    <div class="loader-logo">
+      <img src="../../../image/metro_logo_single.webp" alt="跨洋城际"/>
+      <span class="loader-ring"></span>
+    </div>
+    <div class="loader-title">跨洋城际 <span>Oversea Intercity</span></div>
+    <div class="loader-track">
+      <div class="loader-track-line"></div>
+      <span class="loader-st"></span>
+      <span class="loader-st"></span>
+      <span class="loader-st"></span>
+      <div class="loader-train"></div>
+    </div>
+    <div class="loader-bar"><div class="loader-bar-fill" id="loader-bar-fill"></div></div>
+    <div class="loader-status"><span id="loader-pct">0%</span> · 正在缓冲乘车资源…</div>
+  </div>
+</div>
+
+<!-- ============ 网络超时提示（仅超时兜底进入时显示） ============ -->
+<div class="net-toast" id="net-toast" role="alert">
+  <span class="net-toast-icon">⚠</span>
+  <span class="net-toast-text">网络请求超时</span>
+  <button class="net-toast-close" id="net-toast-close" aria-label="关闭">×</button>
+</div>
+
 <!-- ============ 顶部导航 ============ -->
 <header class="topbar">
   <div class="brand">
