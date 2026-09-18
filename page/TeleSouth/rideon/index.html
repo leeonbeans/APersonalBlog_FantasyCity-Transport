@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>跨洋城际 | Oversea Intercity</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- ============ 顶部导航 ============ -->
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="../../../image/metro_logo_single.webp" alt="跨洋城际"/>
+    <span class="line-chip"></span>
+    <div class="brand-text">
+      <div class="brand-title">跨洋城际 <span class="en">Oversea Intercity</span></div>
+      <div class="brand-sub">线上地铁</div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <div class="direction-chip" id="direction-chip" data-dir="forward" title="当前运行方向">
+      <span class="dir-arrow">→</span>
+      <span class="dir-text">开往 全怪塔</span>
+    </div>
+
+    <div class="clock" id="clock">
+      <div class="clock-time"><span id="clock-hm">--:--</span><em id="clock-s">--</em></div>
+      <div class="clock-date" id="clock-date">----</div>
+    </div>
+
+    <div class="phase-pill" id="phase-badge" data-phase="idle">待发车</div>
+
+    <button class="icon-btn" id="btn-settings" title="设置 (S)" aria-label="设置">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============ PIDS 车载信息屏 ============ -->
+<section class="pids" aria-label="Passenger Information Display">
+  <div class="pids-row">
+
+    <div class="pids-block terminus">
+      <div class="pids-lbl">本次列车开往 <span>TERMINUS</span></div>
+      <div class="pids-zh" id="pids-terminus-zh">全怪塔</div>
+      <div class="pids-en" id="pids-terminus-en">Mob Tower</div>
+    </div>
+
+    <div class="pids-block route">
+      <div class="pids-lbl">线路图 <span>ROUTE</span></div>
+      <svg class="pids-strip" viewBox="0 0 560 96" preserveAspectRatio="xMidYMid meet">
+        <line x1="40" y1="32" x2="520" y2="32"
+              stroke="#85D91E" stroke-opacity="0.22" stroke-width="5" stroke-linecap="round"/>
+        <line id="pids-progress" x1="40" y1="32" x2="40" y2="32"
+              stroke="#85D91E" stroke-width="5" stroke-linecap="round"/>
+        <g id="pids-stations"></g>
+        <g id="pids-strip-labels"></g>
+        <g id="pids-train" transform="translate(40,32)">
+          <circle r="14" fill="#85D91E" opacity="0.20">
+            <animate attributeName="r" values="11;18;11" dur="1.4s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="-10" y="-6" width="20" height="12" rx="3"
+                fill="#ffffff" stroke="#5a9a10" stroke-width="2"/>
+          <circle cx="-4" cy="0" r="1.6" fill="#5a9a10"/>
+          <circle cx="4"  cy="0" r="1.6" fill="#5a9a10"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="pids-block next">
+      <div class="pids-lbl">下一站 <span>NEXT STATION</span></div>
+      <div class="pids-zh" id="pids-next-zh">遗忘温泉</div>
+      <div class="pids-en" id="pids-next-en">Lost Spring</div>
+    </div>
+
+  </div>
+
+  <div class="pids-ticker">
+    <span class="ticker-icon">▸</span>
+    <div class="ticker-text" id="ticker-text">
+      <span class="zh">欢迎乘坐跨洋城际</span>
+      <span class="sep">·</span>
+      <span class="en">Welcome aboard the Oversea Intercity</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 主显示区（多模式轮播） ============ -->
+<main class="display" id="display" data-mode="idle">
+
+  <!-- 模式：待机 -->
+  <div class="disp-mode" data-mode="idle">
+    <div class="idle-scene">
+      <div class="idle-logo">
+        <span class="line-chip big"></span>
+        <div class="idle-title">跨洋城际</div>
+      </div>
+      <div class="idle-sub">Oversea Intercity</div>
+      <div class="idle-hint">按 <kbd>Space</kbd> 或点击右下角按钮乘车</div>
+    </div>
+  </div>
+
+  <!-- 模式：停站开门（左站名 + 右车门装置） -->
+  <div class="disp-mode" data-mode="doors-open">
+    <div class="door-scene open-scene">
+      <div class="big-station">
+        <div class="bs-label">当前站 · CURRENT STATION</div>
+        <div class="bs-zh" id="doors-open-zh">下北泽</div>
+        <div class="bs-en" id="doors-open-en">Shimokita Station</div>
+        <div class="bs-meta">
+          <div class="bsm-item"><span class="bsm-lbl">编号</span><span class="bsm-val" id="doors-open-num">01</span></div>
+          <div class="bsm-item"><span class="bsm-lbl">下一站</span><span class="bsm-val" id="doors-open-next">遗忘温泉</span></div>
+        </div>
+        <div class="bs-transfers" id="doors-open-transfers"></div>
+      </div>
+
+      <div class="door-assembly">
+        <div class="door-frame-v2">
+          <!-- 门后站台场景 -->
+          <div class="platform-scene">
+            <div class="plat-wall"></div>
+            <div class="plat-sign">
+              <div class="ps-bracket"></div>
+              <div class="ps-board">
+                <div class="ps-zh" id="plat-sign-zh">下北泽</div>
+                <div class="ps-en" id="plat-sign-en">Shimokita</div>
+              </div>
+              <div class="ps-bracket right"></div>
+            </div>
+            <div class="plat-pillar"></div>
+            <div class="plat-bench"></div>
+            <div class="plat-floor"></div>
+            <div class="plat-yellow-line"></div>
+          </div>
+          <!-- 门扇 -->
+          <div class="door-leaf left">
+            <div class="dl-window"></div>
+            <div class="dl-ad"></div>
+            <div class="dl-handle"></div>
+            <div class="dl-seal"></div>
+          </div>
+          <div class="door-leaf right">
+            <div class="dl-window"></div>
+            <div class="dl-ad"></div>
+            <div class="dl-handle"></div>
+            <div class="dl-seal"></div>
+          </div>
+          <!-- 门框边 -->
+          <div class="df-top"></div>
+          <div class="df-bottom"></div>
+          <div class="df-side left"></div>
+          <div class="df-side right"></div>
+        </div>
+        <div class="door-status open">
+          <span class="ds-light"></span>
+          <div class="ds-texts">
+            <div class="ds-main">车门已打开</div>
+            <div class="ds-sub">DOORS OPEN · 请先下后上，注意脚下间隙</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模式：关门警告 -->
+  <div class="disp-mode" data-mode="doors-closing">
+    <div class="door-scene closing-scene">
+      <div class="warn-header">
+        <div class="warn-lights">
+          <span class="wl"></span><span class="wl"></span><span class="wl"></span>
+          <span class="wl"></span><span class="wl"></span><span class="wl"></span>
+          <span class="wl"></span>
+        </div>
+        <div class="warn-title">
+          <div class="bell-wrap">
+            <svg class="bell-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M32 8a4 4 0 0 0-4 4v2a14 14 0 0 0-10 13.5V40l-4 6h36l-4-6V27.5A14 14 0 0 0 36 14v-2a4 4 0 0 0-4-4z"/>
+              <path d="M27 52a5 5 0 0 0 10 0"/>
+            </svg>
+            <div class="bell-wave"></div>
+            <div class="bell-wave delay"></div>
+          </div>
+          <div class="wt-text">
+            <div class="wt-main">车门即将关闭</div>
+            <div class="wt-sub">Doors Closing · Please Stand Clear</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="door-assembly compact">
+        <div class="door-frame-v2">
+          <div class="platform-scene">
+            <div class="plat-wall"></div>
+            <div class="plat-sign">
+              <div class="ps-bracket"></div>
+              <div class="ps-board">
+                <div class="ps-zh" id="plat-sign-zh-2">下北泽</div>
+                <div class="ps-en" id="plat-sign-en-2">Shimokita</div>
+              </div>
+              <div class="ps-bracket right"></div>
+            </div>
+            <div class="plat-pillar"></div>
+            <div class="plat-floor"></div>
+            <div class="plat-yellow-line"></div>
+          </div>
+          <div class="door-leaf left">
+            <div class="dl-window"></div>
+            <div class="dl-ad"></div>
+            <div class="dl-handle"></div>
+            <div class="dl-seal"></div>
+          </div>
+          <div class="door-leaf right">
+            <div class="dl-window"></div>
+            <div class="dl-ad"></div>
+            <div class="dl-handle"></div>
+            <div class="dl-seal"></div>
+          </div>
+          <div class="df-top"></div>
+          <div class="df-bottom"></div>
+          <div class="df-side left"></div>
+          <div class="df-side right"></div>
+        </div>
+        <div class="door-status closing">
+          <span class="ds-light"></span>
+          <div class="ds-texts">
+            <div class="ds-main">车门关闭中</div>
+            <div class="ds-sub">DOORS CLOSING · 请勿靠近车门</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模式：下一站放大 -->
+  <div class="disp-mode" data-mode="next-station">
+    <div class="zoom-scene">
+      <div class="zoom-arrow" id="zoom-arrow">→</div>
+      <div class="zoom-label">下一站 · NEXT STATION</div>
+      <div class="zoom-zh" id="zoom-zh">遗忘温泉</div>
+      <div class="zoom-en" id="zoom-en">Lost Spring</div>
+      <div class="zoom-transfers" id="zoom-transfers"></div>
+      <div class="zoom-deco"><span class="zd"></span><span class="zd"></span><span class="zd"></span></div>
+    </div>
+  </div>
+
+  <!-- 模式：即将到站 -->
+  <div class="disp-mode" data-mode="arriving">
+    <div class="arriving-scene">
+      <div class="arriving-banner">
+        <span class="ab-icon">🔊</span>
+        <span class="ab-text">列车即将到达</span>
+        <span class="ab-icon">🔊</span>
+      </div>
+      <div class="arriving-zh" id="arriving-zh">遗忘温泉</div>
+      <div class="arriving-en" id="arriving-en">Arriving at Lost Spring</div>
+      <div class="arriving-transfers" id="arriving-transfers"></div>
+      <div class="arriving-deco">
+        <span class="ad-line"></span>
+        <span class="ad-dot pulse"></span>
+        <span class="ad-line"></span>
+      </div>
+      <div class="arriving-hint">请提前做好下车准备 · Please prepare to alight</div>
+    </div>
+  </div>
+
+  <!-- 模式：大线路图 -->
+  <div class="disp-mode" data-mode="route">
+    <div class="route-scene">
+      <div class="route-header">
+        <div class="rh-left">
+          <span class="rh-tag">RUNNING</span>
+          <span class="rh-text">行驶中</span>
+        </div>
+        <div class="rh-right">
+          <div class="rh-metric"><span class="rh-lbl">下一站</span><span class="rh-val" id="route-next">遗忘温泉</span></div>
+          <div class="rh-metric"><span class="rh-lbl">剩余站数</span><span class="rh-val" id="route-remain">4</span></div>
+          <div class="rh-metric"><span class="rh-lbl">本段进度</span><span class="rh-val" id="route-seg-progress">0%</span></div>
+        </div>
+      </div>
+      <svg class="big-route" id="big-route" viewBox="0 0 1800 350" preserveAspectRatio="xMidYMid meet">
+        <g id="br-base"></g>
+        <g id="br-progress"></g>
+        <g id="br-stations"></g>
+        <g id="br-labels"></g>
+        <g id="br-train">
+          <circle r="34" fill="#85D91E" opacity="0.16">
+            <animate attributeName="r" values="28;42;28" dur="1.6s" repeatCount="indefinite"/>
+          </circle>
+          <rect x="-22" y="-13" width="44" height="26" rx="7" fill="#ffffff" stroke="#5a9a10" stroke-width="3"/>
+          <rect x="-16" y="-8" width="10" height="8" rx="2" fill="#85D91E" opacity="0.85"/>
+          <rect x="-3"  y="-8" width="10" height="8" rx="2" fill="#85D91E" opacity="0.85"/>
+          <rect x="10"  y="-8" width="6"  height="8" rx="2" fill="#85D91E" opacity="0.5"/>
+          <circle cx="-13" cy="13" r="3.5" fill="#5a9a10"/>
+          <circle cx="13"  cy="13" r="3.5" fill="#5a9a10"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- 模式：终点站 -->
+  <div class="disp-mode" data-mode="terminus">
+    <div class="term-scene">
+      <div class="term-flag">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8v48"/>
+          <path d="M12 12h32l-6 8 6 8H12z" fill="currentColor" fill-opacity="0.15"/>
+        </svg>
+      </div>
+      <div class="term-label">本次列车已抵达终点站 · TERMINUS</div>
+      <div class="term-zh" id="term-zh">全怪塔</div>
+      <div class="term-en" id="term-en">Mob Tower</div>
+      <div class="term-sub">感谢乘坐跨洋城际 · Thank you for riding the Oversea Intercity</div>
+      <div class="term-hint" id="term-hint">可在设置中切换方向开启返程</div>
+    </div>
+  </div>
+
+  <button class="fab" id="btn-fab" title="发车 / 暂停 (Space)" aria-label="发车或暂停">
+    <span class="fab-icon" id="fab-icon">▶</span>
+  </button>
+</main>
+
+<!-- ============ 设置弹窗 ============ -->
+<div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">设置 <em>SETTINGS</em></span>
+      <button class="close-btn" id="btn-close-settings" aria-label="关闭">×</button>
+    </div>
+    <div class="modal-body">
+
+      <section class="msec">
+        <h4>运行控制</h4>
+        <div class="row">
+          <button id="btn-start" class="btn primary">▶ 发车</button>
+          <button id="btn-pause" class="btn" disabled>⏸ 暂停</button>
+          <button id="btn-reset" class="btn">↺ 重置</button>
+        </div>
+      </section>
+
+      <section class="msec">
+        <h4>运行方向 <em class="hint">切换方向会重置当前运行</em></h4>
+        <div class="row dir-row">
+          <button class="dir-btn active" data-dir="forward">
+            <span class="dir-arrow">→</span>
+            <span class="dir-name">下北泽 → 全怪塔</span>
+            <span class="dir-en">Shimokita to Mob Tower</span>
+          </button>
+          <button class="dir-btn" data-dir="backward">
+            <span class="dir-arrow">←</span>
+            <span class="dir-name">全怪塔 → 下北泽</span>
+            <span class="dir-en">Mob Tower to Shimokita</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="msec">
+        <h4>参数调节</h4>
+        <div class="row">
+          <label class="ctrl-label">
+            <span>倍速</span>
+            <select id="sel-speed">
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label class="ctrl-label grow">
+            <span>音量 <em id="vol-val">80%</em></span>
+            <input type="range" id="rng-volume" min="0" max="100" value="80"/>
+          </label>
+          <label class="ctrl-label check">
+            <span>循环运行</span>
+            <input type="checkbox" id="chk-loop" checked/>
+          </label>
+          <label class="ctrl-label check">
+            <span>背景音</span>
+            <input type="checkbox" id="chk-bg" checked/>
+          </label>
+        </div>
+      </section>
+
+      <section class="msec">
+        <h4>线路站点 <em class="hint">点击可跳转到该站</em></h4>
+        <div class="station-mini-list" id="station-mini-list"></div>
+      </section>
+
+      <section class="msec">
+        <h4>快捷键</h4>
+        <div class="kbd-hint">
+          <span><kbd>Space</kbd> 发车 / 暂停</span>
+          <span><kbd>R</kbd> 重置</span>
+          <span><kbd>S</kbd> 打开 / 关闭设置</span>
+          <span><kbd>D</kbd> 切换方向</span>
+          <span><kbd>Esc</kbd> 关闭弹窗</span>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
