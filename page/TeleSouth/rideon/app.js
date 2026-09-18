@@ -126,6 +126,19 @@ const BIG_ROUTE = {
 };
 const PIDS_STRIP = { padX:40, endX:520, y:32, labelY:72, stR:6 };
 
+// 竖向线路图几何（移动端 ≤640px 使用；与 CSS 媒体查询保持一致）
+const BIG_ROUTE_V = {
+  width:470, height:460,
+  lineX:64, padY:52, endY:408,
+  stR:15, haloR:26, ringR:21,
+  numX:26, numR:13,
+  nameX:100, zhDy:-10, enDy:11,
+  nameCharW:34, enCharW:8, nameGap:0, transBoxH:22, transBoxGap:5, transFontSize:14, transPadX:11
+};
+// 是否使用竖向线路图（手机端）
+const mqMobile = window.matchMedia('(max-width: 640px)');
+function isVerticalRoute(){ return mqMobile.matches; }
+
 // ============ 音频管理器 ============
 class AudioManager {
   constructor(dir){
@@ -462,6 +475,18 @@ function textColorFor(hex){
   return lum > 0.62 ? '#1a2418' : '#ffffff';
 }
 function buildBigRoute(){
+  if(isVerticalRoute()) buildBigRouteV(); else buildBigRouteH();
+}
+// 跨断点（PC↔手机）时重建线路图方向
+function bindRouteLayoutListener(){
+  const onChange = () => { buildBigRoute(); renderDynamic(); };
+  if(mqMobile.addEventListener) mqMobile.addEventListener('change', onChange);
+  else if(mqMobile.addListener) mqMobile.addListener(onChange);
+}
+// 横向布局（PC 端，保持原样）
+function buildBigRouteH(){
+  const svgH = document.getElementById('big-route');
+  if(svgH) svgH.setAttribute('viewBox', `0 0 ${BIG_ROUTE.width} ${BIG_ROUTE.height}`);
   const { width, lineY, padX, stR, haloR, ringR, labelZhY, labelEnY, numY,
           transBaseY, transBoxH, transBoxGap, transBoxW, transFontSize } = BIG_ROUTE;
   const endX = width - padX;
@@ -508,6 +533,57 @@ function buildBigRoute(){
         </g>
         <text class="br-zh" x="${x}" y="${labelZhY}">${s.zh}</text>
         <text class="br-en" x="${x}" y="${labelEnY}">${s.en}</text>
+        ${trHtml}
+      </g>`;
+  });
+  el.brStations.innerHTML = stHtml;
+  el.brLabels.innerHTML = lbHtml;
+}
+// 竖向布局（手机端：站点从上到下，站名/换乘在右侧，字号按竖向比例放大）
+function buildBigRouteV(){
+  const V = BIG_ROUTE_V;
+  const svg = document.getElementById('big-route');
+  if(svg) svg.setAttribute('viewBox', `0 0 ${V.width} ${V.height}`);
+  el.brBase.innerHTML = `<line x1="${V.lineX}" y1="${V.padY}" x2="${V.lineX}" y2="${V.endY}" class="br-base-line"/>`;
+  el.brProgress.innerHTML = `<line id="br-progress-line" x1="${V.lineX}" y1="${V.padY}" x2="${V.lineX}" y2="${V.padY}" class="br-passed-line"/>`;
+  let stHtml = '', lbHtml = '';
+  STATIONS.forEach((s, i) => {
+    const y = V.padY + (V.endY - V.padY) * (i / (N-1));
+    stHtml += `
+      <g class="br-station" data-idx="${i}" transform="translate(${V.lineX},${y})">
+        <circle class="br-halo" r="${V.haloR}"/>
+        <circle class="br-ring" r="${V.ringR}"/>
+        <circle class="br-dot"  r="${V.stR}"/>
+        <circle class="br-core" r="${(V.stR*0.45).toFixed(2)}"/>
+      </g>`;
+
+    // 换乘徽章：紧跟站名右侧、上下排列的小圆角胶囊；水平取中/英文名较宽者，垂直与中文站名行对齐
+    let trHtml = '';
+    if(s.transfers && s.transfers.length){
+      const k = s.transfers.length;
+      const totalH = k * V.transBoxH + (k - 1) * V.transBoxGap;
+      // 垂直：整组中心对齐中文站名行（y + zhDy），单胶囊时与站名同行
+      let cy = (y + V.zhDy) - totalH / 2;
+      // 水平：起点取中文名与英文名中较宽者之后，避免遮挡任一
+      const nameW = Math.max(s.zh.length * V.nameCharW, s.en.length * V.enCharW);
+      const tx = V.nameX + nameW + V.nameGap;
+      s.transfers.forEach(t => {
+        const w = t.zh.length * V.transFontSize + V.transPadX * 2;
+        trHtml += `<rect class="br-tr-box" x="${tx}" y="${cy}" width="${w}" height="${V.transBoxH}" rx="${V.transBoxH/2}" ry="${V.transBoxH/2}" fill="${t.color}"/>`;
+        trHtml += `<text class="br-tr-name" x="${tx + w/2}" y="${cy + V.transBoxH/2 + V.transFontSize*0.35}" text-anchor="middle" fill="${textColorFor(t.color)}" style="font-size:${V.transFontSize}px">${escapeHtml(t.zh)}</text>`;
+        cy += V.transBoxH + V.transBoxGap;
+      });
+    }
+
+    // 编号（线左侧）+ 站名/英文名（线右侧，左对齐）+ 换乘
+    lbHtml += `
+      <g class="br-station-label" data-idx="${i}">
+        <g transform="translate(${V.numX},${y})">
+          <circle class="br-num-bg" r="${V.numR}"/>
+          <text class="br-num-tx" dy="1">${String(i+1).padStart(2,'0')}</text>
+        </g>
+        <text class="br-zh" x="${V.nameX}" y="${y + V.zhDy}" style="text-anchor:start">${s.zh}</text>
+        <text class="br-en" x="${V.nameX}" y="${y + V.enDy}" style="text-anchor:start">${s.en}</text>
         ${trHtml}
       </g>`;
   });
@@ -620,11 +696,28 @@ function renderDynamic(){
     d.setAttribute('fill', isReached(i) ? '#85D91E' : '#ffffff');
   });
 
-  const brX = bigRouteTrainX(state.progress);
-  const brX1 = state.direction === 'forward' ? BIG_ROUTE.padX : (BIG_ROUTE.width - BIG_ROUTE.padX);
   const brLine = document.getElementById('br-progress-line');
-  if(brLine){ brLine.setAttribute('x1', brX1); brLine.setAttribute('x2', brX); }
-  el.brTrain.setAttribute('transform', `translate(${brX},${BIG_ROUTE.lineY})`);
+  if(isVerticalRoute()){
+    const V = BIG_ROUTE_V;
+    const r = totalLength > 0 ? state.progress / totalLength : 0;
+    const y = state.direction === 'forward'
+      ? V.padY + (V.endY - V.padY) * r
+      : V.endY - (V.endY - V.padY) * r;
+    const y1 = state.direction === 'forward' ? V.padY : V.endY;
+    if(brLine){
+      brLine.setAttribute('x1', V.lineX); brLine.setAttribute('x2', V.lineX);
+      brLine.setAttribute('y1', y1);      brLine.setAttribute('y2', y);
+    }
+    el.brTrain.setAttribute('transform', `translate(${V.lineX},${y})`);
+  } else {
+    const brX = bigRouteTrainX(state.progress);
+    const brX1 = state.direction === 'forward' ? BIG_ROUTE.padX : (BIG_ROUTE.width - BIG_ROUTE.padX);
+    if(brLine){
+      brLine.setAttribute('x1', brX1); brLine.setAttribute('x2', brX);
+      brLine.setAttribute('y1', BIG_ROUTE.lineY); brLine.setAttribute('y2', BIG_ROUTE.lineY);
+    }
+    el.brTrain.setAttribute('transform', `translate(${brX},${BIG_ROUTE.lineY})`);
+  }
 
   const pidsX = pidsTrainX(state.progress);
   const pidsX1 = state.direction === 'forward' ? PIDS_STRIP.padX : PIDS_STRIP.endX;
@@ -1087,6 +1180,7 @@ function init(){
   renderStationMiniList();
   resetState();
   bindEvents();
+  bindRouteLayoutListener();   // 跨断点（PC↔手机）时重建线路图方向
   startClock();
   requestAnimationFrame(tick);
   runLoader();   // 加载动画：等资源缓冲完成后再淡出，露出正常界面

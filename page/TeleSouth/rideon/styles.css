@@ -1505,3 +1505,164 @@ kbd{
 @media (max-width:640px){
   .net-toast{ font-size:13px; padding:10px 12px 10px 14px; top:12px; }
 }
+
+/* ==========================================================
+   移动端适配细化（仅影响 ≤640px 的手机，PC 端样式不受影响）
+   —— 置于文件末尾，凭源码顺序覆盖前面较宽松的响应式值
+   ========================================================== */
+@media (max-width: 640px){
+  /* --- 顶栏 --- */
+  .topbar{ flex-basis:54px; padding:0 12px; }
+  .brand{ gap:9px; }
+  .brand-logo{ height:26px; }
+  .line-chip{ height:26px; width:8px; }
+  .brand-title{ font-size:13px; letter-spacing:.5px; }
+  .brand-title .en{ font-size:9px; margin-left:5px; letter-spacing:1px; }
+  .topbar-right{ gap:7px; }
+  .direction-chip{ padding:4px 9px; font-size:10px; gap:5px; }
+  .direction-chip .dir-arrow{ font-size:13px; }
+  .phase-pill{ padding:4px 9px; font-size:9px; letter-spacing:1px; }
+  .icon-btn{ width:32px; height:32px; border-radius:8px; }
+  .icon-btn svg{ width:17px; height:17px; }
+
+  /* --- PIDS 车载信息屏：路线图上置，终点/下一站左右排版 --- */
+  .pids{ padding:8px 12px 0; }
+  .pids-row{ grid-template-columns:1fr 1fr; gap:6px 10px; }
+  .pids-block{ padding:4px 2px 6px; }
+  .pids-block.route{ grid-column:1 / -1; order:-1; }
+  .pids-block.terminus{ align-items:flex-start; text-align:left; }
+  .pids-block.next{ align-items:flex-end; text-align:right; }
+  .pids-lbl{ font-size:10px; letter-spacing:1px; gap:5px; margin-bottom:2px; }
+  .pids-lbl span{ font-size:8px; letter-spacing:1px; }
+  .pids-zh{ font-size:19px; letter-spacing:1px; }
+  .pids-en{ font-size:9px; letter-spacing:1px; margin-top:2px; }
+  .pids-strip{ height:64px; max-width:100%; }
+  .pids-ticker{ height:30px; margin:0 -12px; padding:0 12px; gap:8px; }
+  .ticker-icon{ font-size:12px; }
+  .ticker-text{ font-size:11px; letter-spacing:.8px; }
+  .ticker-text .en{ font-size:10px; }
+
+  /* --- 主显示区通用 --- */
+  .disp-mode{ padding:12px; }
+
+  /* --- 待机 --- */
+  .idle-logo{ gap:11px; margin-bottom:8px; }
+  .line-chip.big{ width:11px; height:34px; }
+  .idle-title{ font-size:24px; letter-spacing:3px; }
+  .idle-sub{ font-size:11px; letter-spacing:3px; margin-bottom:18px; }
+  .idle-hint{ font-size:12px; }
+
+  /* --- 停站开门：站名区 --- */
+  .door-scene.open-scene{ gap:16px; }
+  .bs-label{ font-size:9px; letter-spacing:2px; margin-bottom:7px; }
+  .bs-zh{ font-size:36px; letter-spacing:2px; margin-bottom:7px; }
+  .bs-en{ font-size:11px; letter-spacing:2px; }
+  .bs-meta{ gap:18px; margin-top:13px; padding-top:11px; }
+  .bsm-val{ font-size:15px; letter-spacing:1px; }
+  .door-frame-v2{ width:210px; height:210px; }
+  .door-assembly.compact .door-frame-v2{ width:210px; height:160px; }
+  .door-status{ min-width:auto; padding:8px 13px; gap:9px; border-radius:18px; }
+  .ds-light{ width:10px; height:10px; }
+  .ds-main{ font-size:12px; letter-spacing:1px; }
+  .ds-sub{ font-size:8px; letter-spacing:.4px; }
+
+  /* --- 关门警告：铃铛与文字垂直居中堆叠，避免被挤偏 --- */
+  .door-scene.closing-scene{ gap:14px; }
+  .warn-header{ gap:12px; }
+  .warn-lights{ gap:8px; }
+  .wl{ width:11px; height:11px; }
+  .warn-title{ flex-direction:column; gap:8px; }
+  .bell-wrap{ width:44px; height:44px; }
+  .bell-icon{ width:36px; height:36px; }
+  .wt-main{ font-size:24px; letter-spacing:2px; }
+  .wt-sub{ font-size:11px; letter-spacing:1px; margin-top:6px; line-height:1.35; }
+
+  /* --- 下一站放大 --- */
+  .zoom-arrow{ font-size:46px; margin-bottom:8px; }
+  .zoom-label{ font-size:10px; letter-spacing:3px; margin-bottom:12px; }
+  .zoom-zh{ font-size:50px; letter-spacing:3px; margin-bottom:12px; }
+  .zoom-en{ font-size:14px; letter-spacing:3px; }
+  .zoom-deco{ margin-top:20px; gap:8px; }
+  .zd{ width:30px; }
+
+  /* --- 即将到站（原本占满半屏，全面缩小） --- */
+  .arriving-scene{ gap:11px; }
+  .arriving-banner{ padding:7px 18px; gap:9px; border-width:1.5px; }
+  .arriving-banner .ab-icon{ font-size:17px; }
+  .arriving-banner .ab-text{ font-size:15px; letter-spacing:3px; }
+  .arriving-zh{ font-size:46px; letter-spacing:4px; }
+  .arriving-en{ font-size:13px; letter-spacing:2px; }
+  .arriving-deco{ gap:9px; margin-top:4px; }
+  .arriving-deco .ad-line{ width:54px; }
+  .arriving-deco .ad-dot{ width:9px; height:9px; }
+  .arriving-hint{ font-size:11px; letter-spacing:1px; margin-top:8px; }
+
+  /* --- 终点 --- */
+  .term-scene{ padding:12px; }
+  .term-flag{ width:52px; height:52px; margin-bottom:14px; }
+  .term-label{ font-size:10px; letter-spacing:2px; margin-bottom:10px; }
+  .term-zh{ font-size:42px; letter-spacing:3px; margin-bottom:10px; }
+  .term-en{ font-size:14px; letter-spacing:3px; margin-bottom:16px; }
+  .term-sub{ font-size:12px; letter-spacing:1px; }
+  .term-hint{ font-size:10px; margin-top:14px; padding:6px 12px; }
+
+  /* --- 换乘信息（“可换乘线路 · 主城城际”字体过大） --- */
+  .zoom-transfers, .bs-transfers, .arriving-transfers{ margin-top:12px; gap:7px; }
+  .bs-transfers{ align-items:center; }
+  .tr-head{ gap:7px; }
+  .tr-icon{ width:23px; height:23px; font-size:13px; border-radius:7px; }
+  .tr-label{ font-size:13px; letter-spacing:2px; }
+  .tr-label-en{ font-size:8px; letter-spacing:1px; padding-top:3px; }
+  .tr-badges{ gap:7px; justify-content:center; }
+  .bs-transfers .tr-badges{ justify-content:center; }
+  .tr-badge{ font-size:13px; padding:6px 14px 6px 11px; gap:7px; border-width:2px; }
+  .tr-badge .tr-dot{ width:10px; height:10px; }
+  /* 覆盖分级字号（zoom / bs / arriving 三档在手机上统一缩小） */
+  .zoom-transfers .tr-icon{ width:25px; height:25px; font-size:14px; border-radius:8px; }
+  .zoom-transfers .tr-label{ font-size:14px; letter-spacing:2px; }
+  .zoom-transfers .tr-label-en{ font-size:9px; }
+  .zoom-transfers .tr-badge{ font-size:14px; padding:6px 15px 6px 12px; gap:8px; border-width:2px; }
+  .zoom-transfers .tr-badge .tr-dot{ width:11px; height:11px; }
+  .bs-transfers .tr-icon{ width:23px; height:23px; font-size:13px; }
+  .bs-transfers .tr-label{ font-size:13px; }
+  .bs-transfers .tr-badge{ font-size:13px; padding:6px 14px 6px 11px; }
+  .bs-transfers .tr-badge .tr-dot{ width:10px; height:10px; }
+  .arriving-transfers .tr-label{ font-size:13px; }
+  .arriving-transfers .tr-badge{ font-size:13px; padding:6px 14px 6px 11px; }
+
+  /* --- 大线路图（行驶中）：手机端改为竖向 SVG，给足高度使字号清晰 --- */
+  .route-scene{ gap:12px; }
+  .route-header{ flex-direction:column; align-items:flex-start; gap:9px; padding:10px 14px; }
+  .rh-left{ gap:9px; }
+  .rh-tag{ font-size:11px; letter-spacing:2px; }
+  .rh-text{ font-size:18px; letter-spacing:1px; }
+  .rh-right{ gap:0; width:100%; justify-content:space-between; }
+  .rh-metric{ align-items:flex-start; }
+  .rh-lbl{ font-size:11px; }
+  .rh-val{ font-size:17px; }
+  .big-route{ padding:6px 0; border-radius:12px; width:100%; height:min(52vh,460px); }
+  .br-en{ letter-spacing:0.5px; }
+
+  /* --- FAB 发车按钮 --- */
+  .fab{ width:52px; height:52px; font-size:17px; bottom:14px; right:14px; box-shadow:var(--sh-m),0 0 0 5px var(--line-mist); }
+
+  /* --- 弹窗（设置）--- */
+  .modal{ width:96vw; max-height:92vh; }
+  .modal-body{ padding:4px 16px 16px; }
+  .dir-btn{ padding:11px 8px; }
+  .dir-btn .dir-name{ font-size:12px; }
+  .station-mini-list{ grid-template-columns:1fr; }
+}
+
+/* --- 超小屏（≤380px）再降一档 --- */
+@media (max-width: 380px){
+  .pids-zh{ font-size:17px; }
+  .bs-zh{ font-size:30px; }
+  .zoom-zh{ font-size:42px; }
+  .arriving-zh{ font-size:38px; letter-spacing:3px; }
+  .arriving-banner .ab-text{ font-size:13px; letter-spacing:2px; }
+  .term-zh{ font-size:36px; }
+  .wt-main{ font-size:20px; }
+  .door-frame-v2{ width:180px; height:180px; }
+  .door-assembly.compact .door-frame-v2{ width:180px; height:140px; }
+}
