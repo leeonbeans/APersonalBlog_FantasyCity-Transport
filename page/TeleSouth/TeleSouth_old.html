@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+        <title>南方电信 | Minecraft服务器</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --dark: #2E7D32;
+            --light: #E8F5E9;
+            --accent: #FF9800;
+        }
+
+        body {
+            background-color: #1a1a2e;
+            color: #f1f1f1;
+            line-height: 1.6;
+            background-image: linear-gradient(rgba(26, 26, 46, 0.9), rgba(26, 26, 46, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232a2a4a"/><path d="M0 0L100 100M100 0L0 100" stroke="%23333" stroke-width="1"/></svg>');
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: var(--accent);
+            margin: 10px auto;
+        }
+
+        p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: #e68900;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 导航栏 */
+        header {
+            background-color: rgba(26, 26, 46, 0.9);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 30px;
+        }
+
+        .nav-links a {
+            color: #f1f1f1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* 英雄区域 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231a1a2e"/><path d="M0 0L100 100M100 0L0 100" stroke="%23333" stroke-width="1"/></svg>');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            animation: fadeIn 2s ease;
+        }
+
+        .server-ip {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            animation: fadeIn 2.5s ease;
+        }
+
+        /* 特色区域 */
+        .features {
+            background-color: rgba(42, 42, 74, 0.5);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        /* 游戏玩法 */
+        .gameplay {
+            background-color: rgba(26, 26, 46, 0.8);
+        }
+
+        .gameplay-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .gameplay-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gameplay-img {
+            height: 200px;
+            background-color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .gameplay-content {
+            padding: 20px;
+        }
+
+        /* 服务器信息 */
+        .server-info {
+            background-color: rgba(42, 42, 74, 0.5);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .info-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-card h3 {
+            color: var(--secondary);
+        }
+
+        /* 规则区域 */
+        .rules {
+            background-color: rgba(26, 26, 46, 0.8);
+        }
+
+        .rules-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .rules-list {
+            list-style-type: none;
+        }
+
+        .rules-list li {
+            margin-bottom: 15px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .rules-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* 加入区域 */
+        .join {
+            background-color: rgba(42, 42, 74, 0.5);
+            text-align: center;
+        }
+
+        .join-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 页脚 */
+        footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .footer-links li {
+            margin: 0 15px;
+        }
+
+        .footer-links a {
+            color: #f1f1f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .copyright {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .feature-grid, .gameplay-grid, .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /*======== 轮播图组件 ========*/
+        .carousel{
+            position:relative;
+            width:100%;
+                          /* 与 .gameplay-img 等高，保持卡片统一 */
+            overflow:hidden;
+            border-radius:10px 10px 0 0;
+            --idx:0;                   /* CSS 变量，记录当前图片索引 */
+        }
+        .carousel-inner{
+            display:flex;
+            height:100%;
+            transform:translateX(calc(var(--idx) * -100%));
+            transition:transform .5s ease;
+        }
+        .carousel-inner img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            flex:none;
+        }
+        /* 箭头 */
+        .carousel-btn{
+            position:absolute;
+            top:50%;
+            transform:translateY(-50%);
+            background:rgba(0,0,0,.45);
+            color:#fff;
+            border:none;
+            font-size:1.8rem;
+            line-height:1;
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            cursor:pointer;
+            transition:background .3s;
+            z-index:2;
+        }
+        .carousel-btn:hover{background:rgba(0,0,0,.65)}
+        .prev{left:10px}
+        .next{right:10px}
+        /* 指示器 */
+        .carousel-dots{
+            position:absolute;
+            bottom:8px;
+            left:50%;
+            transform:translateX(-50%);
+            display:flex;
+            gap:6px;
+            z-index:2;
+        }
+        .dot{
+            width:10px;
+            height:10px;
+            border-radius:50%;
+            background:rgba(255,255,255,.5);
+            cursor:pointer;
+            transition:background .3s;
+        }
+        .dot.active{background:var(--accent)}
+        .transit-info-card img{
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<!-- 导航栏 -->
+<header>
+    <div class="container">
+        <nav>
+            <div class="logo">休闲<span>养老</span></div>
+            <ul class="nav-links">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#features">特色</a></li>
+                <li><a href="#gameplay">玩法</a></li>
+                <li><a href="#info">服务器信息</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- 英雄区域 -->
+<section class="hero" id="home" style="background-image: url(../../image/TeleSouth/theMainCityTheMainDistrict.webp)">
+    <div class="container" >
+        <div class="hero-content">
+            <h1>欢迎来到 南方电信</h1>
+            <p>一个充满创意与冒险的Minecraft服务器</p>
+        </div>
+    </div>
+</section>
+
+<!-- 特色区域 -->
+<section class="features" id="features">
+    <div class="container">
+        <h2>服务器特色</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚝🚇️🚃</div>
+                <h3>打造属于你自己的轨道交通</h3>
+                <p>服务器装载<b>机械动力</b>mod，你可以任意打造属于你自己的轨道交通线路！</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏰</div>
+                <h3>任意建造你梦想中的建筑</h3>
+                <p>服务器不限制你的创意！只要找块空地即可开始打造你的建筑——当然！创造模式也可以！</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 游戏玩法 -->
+<section class="gameplay" id="gameplay">
+    <div class="container">
+        <h2>探索这个世界吧！</h2>
+        <div class="gameplay-grid">
+            <div class="gameplay-card">
+                <!-- 轮播图卡片 -->
+                <div class="gameplay-card">
+                    <div class="carousel" data-autoplay="3000">
+                        <!-- 图片列表 -->
+                        <div class="carousel-inner">
+                            <img src="../../image/TeleSouth/RhodesIsland.webp" alt="罗德岛">
+                            <img src="../../image/TeleSouth/ShengbideBridge.webp" alt="圣彼得大桥">
+                            <img src="../../image/TeleSouth/EndfiledIceBridge.webp" alt="终末地冰岛大桥">
+                            <img src="../../image/TeleSouth/GreatSakuraTree.webp" alt="巨大樱花树">
+                            <img src="../../image/TeleSouth/LostGardenStation.webp" alt="遗忘花园">
+                        </div>
+
+                        <!-- 左右箭头 -->
+                        <button class="carousel-btn prev" aria-label="上一张">‹</button>
+                        <button class="carousel-btn next" aria-label="下一张">›</button>
+
+                        <!-- 指示器 -->
+                        <div class="carousel-dots"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="gameplay-card">
+                <!-- 轮播图卡片 -->
+                <div class="gameplay-card">
+                    <div class="carousel" data-autoplay="3000">
+                        <!-- 图片列表 -->
+                        <div class="carousel-inner">
+                            <img src="../../image/TeleSouth/theMainCityWestStation.webp" alt="主城西火车">
+                            <img src="../../image/TeleSouth/LanlanwoRailwayStation.webp" alt="兰兰窝火车站">
+                            <img src="../../image/TeleSouth/Shimokita.webp" alt="下北泽">
+                            <img src="../../image/TeleSouth/SpwanPointStation.webp" alt="伊始站火车站">
+                        </div>
+
+                        <!-- 左右箭头 -->
+                        <button class="carousel-btn prev" aria-label="上一张">‹</button>
+                        <button class="carousel-btn next" aria-label="下一张">›</button>
+
+                        <!-- 指示器 -->
+                        <div class="carousel-dots"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="transit-info">
+    <div class="container">
+        <h2>服务器轨道交通</h2>
+        <p>服务器建有多条便携的轨道交通，方便市民旅客通勤观光。</p>
+            <div class="transit-info-card">
+                <img src="../../image/TeleSouth/TheMainCityTransportationMap.webp" alt="主城及周边区域轨道交通图">
+            </div>
+        <h2>点此查看→ <a href="metro_telesouth.html" style="color: #85d91e;text-decoration: none" target="_blank">服务器轨道交通换乘地图</a></h2>
+    </div>
+</section>
+
+<!-- 服务器信息 -->
+<section class="server-info" id="info">
+    <div class="container">
+        <h2>服务器信息</h2>
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>版本</h3>
+                <p>Minecraft Java 1.21.1 Neoforge</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 页脚 -->
+<footer>
+    <div class="container">
+        <ul class="footer-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#features">特色</a></li>
+            <li><a href="#gameplay">玩法</a></li>
+            <li><a href="#info">服务器信息</a></li>
+        </ul>
+        <p class="copyright">© 2025 南方电信 Minecraft服务器. 不保留任何权利.</p>
+    </div>
+</footer>
+
+<script>
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+            if(targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if(targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // 导航栏背景变化
+    window.addEventListener('scroll', function() {
+        const header = document.querySelector('header');
+        if(window.scrollY > 100) {
+            header.style.backgroundColor = 'rgba(26, 26, 46, 0.95)';
+        } else {
+            header.style.backgroundColor = 'rgba(26, 26, 46, 0.9)';
+        }
+    });
+</script>
+<script>
+    /* ================= 轮播图 ================= */
+    document.querySelectorAll('.carousel').forEach(carousel => {
+        const inner = carousel.querySelector('.carousel-inner');
+        const imgs  = Array.from(inner.querySelectorAll('img'));
+        const dotsBox = carousel.querySelector('.carousel-dots');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+        const autoplayDelay = +carousel.dataset.autoplay || 3000;
+
+        let idx = 0, timer = null;
+
+        /* 创建指示器 */
+        imgs.forEach((_, i) => {
+            const d = document.createElement('span');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            d.addEventListener('click', () => go(i));
+            dotsBox.appendChild(d);
+        });
+        const dots = Array.from(dotsBox.children);
+
+        function update() {
+            inner.style.setProperty('--idx', idx);
+            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+        function go(i) {
+            idx = (i + imgs.length) % imgs.length;
+            update();
+            resetAutoplay();
+        }
+        function next() { go(idx + 1) }
+        function prev() { go(idx - 1) }
+        function resetAutoplay() {
+            clearInterval(timer);
+            timer = setInterval(next, autoplayDelay);
+        }
+
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
+
+        /* 鼠标悬停暂停 */
+        carousel.addEventListener('mouseenter', () => clearInterval(timer));
+        carousel.addEventListener('mouseleave', resetAutoplay);
+
+        /* 启动 */
+        update();
+        resetAutoplay();
+    });
+</script>
+</body>
+</html>

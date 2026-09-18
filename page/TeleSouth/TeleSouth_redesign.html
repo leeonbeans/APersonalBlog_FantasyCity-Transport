@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>南方电信 | TeleSouth Transit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-deep: #060a10;
+            --bg-primary: #0a0e14;
+            --bg-card: #111820;
+            --border: #1e2a3a;
+            --border-bright: #2a3a4e;
+            --cyan: #00e5ff;
+            --cyan-dim: #007a8a;
+            --amber: #f0a030;
+            --text-pri: #e0e8f0;
+            --text-sec: #7a8a9e;
+            --text-dim: #4a5a6e;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body {
+            background:var(--bg-deep);
+            color:var(--text-pri);
+            font-family:'Rajdhani','Segoe UI',sans-serif;
+            overflow-x:hidden;
+        }
+        .font-tech { font-family:'Orbitron',monospace; }
+
+        /* Grid background */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+            background-size:60px 60px;
+        }
+
+        /* Animated transit line */
+        .transit-line {
+            height:2px;
+            background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+            background-size:200% 100%;
+            animation:transitFlow 3s linear infinite;
+        }
+        @keyframes transitFlow { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .transit-line-v {
+            width:2px;
+            background:linear-gradient(180deg,transparent,var(--cyan),transparent);
+            background-size:100% 200%;
+            animation:transitFlowV 3s linear infinite;
+        }
+        @keyframes transitFlowV { 0%{background-position:0 200%} 100%{background-position:0 -200%} }
+
+        /* Station dot */
+        .station-dot {
+            width:12px; height:12px; border-radius:50%;
+            border:2px solid var(--cyan); background:var(--bg-deep);
+            position:relative; z-index:2;
+        }
+        .station-dot.active { background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+
+        .glow-text { text-shadow:0 0 20px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.2); }
+
+        /* Nav */
+        header {
+            position:fixed; top:0; left:0; width:100%; z-index:1000;
+            background:rgba(6,10,16,0.75); backdrop-filter:blur(10px);
+            border-bottom:1px solid var(--border);
+            transition:background .3s;
+        }
+        .nav-link { position:relative; transition:color .3s; }
+        .nav-link::after {
+            content:''; position:absolute; left:0; bottom:-4px;
+            width:0; height:1px; background:var(--cyan); transition:width .3s;
+        }
+        .nav-link:hover { color:var(--cyan); }
+        .nav-link:hover::after { width:100%; }
+
+        /* Corner frame */
+        .corner-frame { position:relative; }
+        .corner-frame::before, .corner-frame::after {
+            content:''; position:absolute; width:14px; height:14px;
+            border-color:var(--cyan); transition:all .3s;
+        }
+        .corner-frame::before { top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
+        .corner-frame::after { bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
+
+        /* Feature card */
+        .feature-card {
+            background:var(--bg-card); border:1px solid var(--border);
+            padding:2.5rem 2rem; position:relative; overflow:hidden;
+            transition:all .4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .feature-card::before {
+            content:''; position:absolute; top:0; left:0; width:100%; height:2px;
+            background:linear-gradient(90deg,var(--cyan),transparent);
+            transform:scaleX(0); transform-origin:left; transition:transform .4s;
+        }
+        .feature-card:hover { border-color:var(--cyan-dim); transform:translateY(-6px);
+            box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 24px rgba(0,229,255,0.08); }
+        .feature-card:hover::before { transform:scaleX(1); }
+        .feature-num {
+            font-family:'Orbitron',monospace; font-size:3rem; font-weight:900;
+            color:transparent; -webkit-text-stroke:1px var(--border-bright);
+            line-height:1; transition:all .4s;
+        }
+        .feature-card:hover .feature-num { -webkit-text-stroke-color:var(--cyan); }
+
+        /* Carousel */
+        .carousel { position:relative; width:100%; overflow:hidden; background:var(--bg-card);
+            border:1px solid var(--border); }
+        .carousel-inner { display:flex; height:100%; transition:transform .6s cubic-bezier(0.4,0,0.2,1);
+            transform:translateX(calc(var(--idx,0) * -100%)); }
+        .slide { position:relative; flex:none; width:100%; height:340px; }
+        .slide img { width:100%; height:100%; object-fit:cover; filter:brightness(0.82);
+            transition:filter .4s; }
+        .carousel:hover .slide img { filter:brightness(0.95); }
+        .slide-caption {
+            position:absolute; left:0; bottom:0; width:100%;
+            padding:2.5rem 1.25rem 1rem;
+            background:linear-gradient(transparent,rgba(6,10,16,0.92));
+        }
+        .carousel-btn {
+            position:absolute; top:50%; transform:translateY(-50%);
+            width:38px; height:38px; border-radius:50%;
+            background:rgba(6,10,16,0.6); border:1px solid var(--border-bright);
+            color:var(--cyan); font-size:1.4rem; line-height:1; cursor:pointer;
+            transition:all .3s; z-index:3; display:flex; align-items:center; justify-content:center;
+        }
+        .carousel-btn:hover { background:var(--cyan); color:var(--bg-deep); box-shadow:0 0 16px rgba(0,229,255,0.4); }
+        .prev { left:12px; } .next { right:12px; }
+        .carousel-dots { position:absolute; bottom:12px; right:16px; display:flex; gap:7px; z-index:3; }
+        .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.3);
+            cursor:pointer; transition:all .3s; }
+        .dot.active { background:var(--cyan); box-shadow:0 0 8px var(--cyan); width:22px; border-radius:4px; }
+
+        /* Transit map */
+        .map-frame { border:1px solid var(--border); background:var(--bg-card); padding:12px;
+            position:relative; transition:all .4s; }
+        .map-frame:hover { border-color:var(--cyan-dim); box-shadow:0 0 30px rgba(0,229,255,0.08); }
+        .map-frame img { width:100%; display:block; }
+
+        /* CTA button */
+        .btn-tech {
+            display:inline-block; border:1px solid var(--cyan); color:var(--cyan);
+            padding:.85rem 2.2rem; font-family:'Orbitron',monospace; font-size:.8rem;
+            letter-spacing:.15em; transition:all .3s; position:relative; overflow:hidden;
+        }
+        .btn-tech::before { content:''; position:absolute; inset:0; background:var(--cyan);
+            transform:scaleX(0); transform-origin:left; transition:transform .35s; z-index:-1; }
+        .btn-tech:hover { color:var(--bg-deep); box-shadow:0 0 24px rgba(0,229,255,0.35); }
+        .btn-tech:hover::before { transform:scaleX(1); }
+
+        /* Reveal animation */
+        .reveal { opacity:0; transform:translateY(30px); transition:all .8s cubic-bezier(0.4,0,0.2,1); }
+        .reveal.visible { opacity:1; transform:translateY(0); }
+
+        /* Hero */
+        .hero {
+            min-height:100vh; display:flex; align-items:center; justify-content:center;
+            position:relative; text-align:center;
+            background:linear-gradient(rgba(6,10,16,0.72),rgba(6,10,16,0.9)),
+                url('../../image/TeleSouth/TheMainCityTheMainDistrict.webp') center/cover no-repeat;
+        }
+        .hero::after {
+            content:''; position:absolute; inset:0;
+            background-image:linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px);
+            background-size:60px 60px; pointer-events:none;
+        }
+        .scanline {
+            position:absolute; left:0; width:100%; height:2px;
+            background:linear-gradient(90deg,transparent,rgba(0,229,255,0.5),transparent);
+            animation:scan 6s linear infinite; pointer-events:none;
+        }
+        @keyframes scan { 0%{top:0;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{top:100%;opacity:0} }
+
+        .badge {
+            display:inline-flex; align-items:center; gap:.5rem;
+            border:1px solid var(--border-bright); padding:.3rem .9rem;
+            font-family:'Orbitron',monospace; font-size:.65rem; letter-spacing:.2em;
+            color:var(--text-sec);
+        }
+        .badge .led { width:6px; height:6px; border-radius:50%; background:var(--cyan);
+            box-shadow:0 0 8px var(--cyan); animation:blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        @media (max-width:768px) {
+            .slide { height:240px; }
+            .nav-menu { display:none; }
+        }
+    </style>
+</head>
+<body class="grid-bg">
+
+<!-- ===== 导航栏 ===== -->
+<header id="header">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
+        <a href="#home" class="flex items-center gap-3">
+            <div class="station-dot active"></div>
+            <span class="font-tech font-bold tracking-widest text-lg">
+                南方<span style="color:var(--cyan)">电信</span>
+            </span>
+        </a>
+        <nav class="nav-menu flex items-center gap-8 font-tech text-xs tracking-widest" style="color:var(--text-sec)">
+            <a href="#features" class="nav-link">FEATURES</a>
+            <a href="#explore" class="nav-link">EXPLORE</a>
+            <a href="#transit" class="nav-link">TRANSIT</a>
+        </nav>
+    </div>
+    <div class="transit-line"></div>
+</header>
+
+<!-- ===== 英雄区域 ===== -->
+<section class="hero" id="home">
+    <div class="scanline"></div>
+    <div class="relative z-10 px-6 max-w-3xl">
+        <div class="badge mb-6 mx-auto"><span class="led"></span>TELESOUTH · REGION ONLINE</div>
+        <div class="font-tech text-xs tracking-[0.4em] mb-4" style="color:var(--cyan)">── WELCOME TO ──</div>
+        <h1 class="font-tech text-4xl md:text-6xl font-black tracking-wide glow-text mb-6">南方电信</h1>
+        <p class="text-lg md:text-xl mb-3" style="color:var(--text-pri)">
+            一个充满创意与冒险的 Minecraft 世界
+        </p>
+        <p class="text-sm md:text-base mb-10" style="color:var(--text-sec)">
+            在这里，你可以亲手铺设轨道、构筑城市，探索由玩家共建的广袤大陆。
+        </p>
+        <div class="flex items-center justify-center gap-4 mb-4">
+            <div style="width:40px;height:2px;background:var(--border)"></div>
+            <div class="station-dot"></div>
+            <div style="width:40px;height:2px;background:var(--border)"></div>
+            <div class="station-dot active"></div>
+            <div style="width:40px;height:2px;background:var(--border)"></div>
+            <div class="station-dot"></div>
+        </div>
+        <a href="#features" class="btn-tech mt-8">EXPLORE</a>
+    </div>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" style="color:var(--text-dim)">
+        <span class="font-tech text-xs tracking-widest">SCROLL</span>
+        <div class="transit-line-v" style="height:30px"></div>
+    </div>
+</section>
+
+<!-- ===== 特色 ===== -->
+<section id="features" class="py-24 px-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 reveal">
+            <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">── FEATURES ──</div>
+            <h2 class="font-tech text-3xl md:text-4xl font-bold tracking-wide">世界特色</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="feature-card corner-frame reveal">
+                <div class="feature-num mb-4">01</div>
+                <h3 class="font-tech text-xl font-bold mb-3" style="color:var(--text-pri)">打造属于你的轨道交通</h3>
+                <p style="color:var(--text-sec)">
+                    世界装载 <b style="color:var(--cyan)">机械动力</b> mod，你可以自由设计并铺设属于你自己的轨道线路，
+                    让列车穿梭在你亲手建造的城市之间。
+                </p>
+            </div>
+            <div class="feature-card corner-frame reveal">
+                <div class="feature-num mb-4">02</div>
+                <h3 class="font-tech text-xl font-bold mb-3" style="color:var(--text-pri)">任意建造梦想中的建筑</h3>
+                <p style="color:var(--text-sec)">
+                    这里不限制你的创意！找一块空地即可开始打造你的建筑——当然，
+                    <b style="color:var(--amber)">创造模式</b> 也随时为你敞开。
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="transit-line mx-auto max-w-4xl"></div>
+
+<!-- ===== 探索世界（轮播画廊） ===== -->
+<section id="explore" class="py-24 px-6">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16 reveal">
+            <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">── EXPLORE ──</div>
+            <h2 class="font-tech text-3xl md:text-4xl font-bold tracking-wide">探索这个世界</h2>
+            <p class="mt-4" style="color:var(--text-sec)">从地标景观到轨道站点，每一处都由玩家亲手筑造。</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Gallery 1 -->
+            <div class="reveal">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="station-dot active"></div>
+                    <h3 class="font-tech text-sm tracking-[0.2em]" style="color:var(--cyan)">LANDMARKS · 地标景观</h3>
+                </div>
+                <div class="carousel corner-frame" data-autoplay="4000">
+                    <div class="carousel-inner">
+                        <div class="slide"><img src="../../image/TeleSouth/RhodesIsland.webp" alt="罗德岛"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--cyan)">RHODES ISLAND</span><p class="text-lg font-semibold">罗德岛</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/ShengbideBridge.webp" alt="圣彼得大桥"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--cyan)">ST. PETER BRIDGE</span><p class="text-lg font-semibold">圣彼得大桥</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/EndfiledIceBridge.webp" alt="终末地冰岛大桥"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--cyan)">ICE BRIDGE</span><p class="text-lg font-semibold">终末地冰岛大桥</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/GreatSakuraTree.webp" alt="巨大樱花树"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--cyan)">GREAT SAKURA</span><p class="text-lg font-semibold">巨大樱花树</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/LostGardenStation.webp" alt="遗忘花园"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--cyan)">LOST GARDEN</span><p class="text-lg font-semibold">遗忘花园</p></div></div>
+                    </div>
+                    <button class="carousel-btn prev" aria-label="上一张">‹</button>
+                    <button class="carousel-btn next" aria-label="下一张">›</button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+
+            <!-- Gallery 2 -->
+            <div class="reveal">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="station-dot active"></div>
+                    <h3 class="font-tech text-sm tracking-[0.2em]" style="color:var(--amber)">STATIONS · 轨道站点</h3>
+                </div>
+                <div class="carousel corner-frame" data-autoplay="4000">
+                    <div class="carousel-inner">
+                        <div class="slide"><img src="../../image/TeleSouth/TheMainCityWestStation.webp" alt="主城西火车站"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--amber)">WEST STATION</span><p class="text-lg font-semibold">主城西火车站</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/LanlanwoRailwayStation.webp" alt="兰兰窝火车站"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--amber)">LANLANWO</span><p class="text-lg font-semibold">兰兰窝火车站</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/Shimokita.webp" alt="下北泽"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--amber)">SHIMOKITA</span><p class="text-lg font-semibold">下北泽</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/SpwanPointStation.webp" alt="伊始站"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--amber)">SPAWN POINT</span><p class="text-lg font-semibold">伊始站</p></div></div>
+                        <div class="slide"><img src="../../image/TeleSouth/littlerailway.webp" alt="小铁路"><div class="slide-caption"><span class="font-tech text-xs tracking-widest" style="color:var(--amber)">LITTLE RAILWAY</span><p class="text-lg font-semibold">郊野小铁路</p></div></div>
+                    </div>
+                    <button class="carousel-btn prev" aria-label="上一张">‹</button>
+                    <button class="carousel-btn next" aria-label="下一张">›</button>
+                    <div class="carousel-dots"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="transit-line mx-auto max-w-4xl"></div>
+
+<!-- ===== 轨道交通 ===== -->
+<section id="transit" class="py-24 px-6">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-12 reveal">
+            <div class="font-tech text-xs tracking-[0.3em] mb-4" style="color:var(--cyan)">── TRANSIT NETWORK ──</div>
+            <h2 class="font-tech text-3xl md:text-4xl font-bold tracking-wide">世界轨道交通</h2>
+            <p class="mt-4 max-w-2xl mx-auto" style="color:var(--text-sec)">
+                世界建有多条便捷的轨道交通线路，方便市民与旅客通勤、观光，串联起主城与周边区域。
+            </p>
+        </div>
+
+        <div class="map-frame corner-frame reveal">
+            <img src="../../image/TeleSouth/TheMainCityTransportationMap.webp" alt="主城及周边区域轨道交通图">
+        </div>
+
+        <div class="text-center mt-10 reveal">
+            <a href="metro_telesouth.html" target="_blank" class="btn-tech">查看换乘地图 →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== 页脚 ===== -->
+<footer class="border-t" style="border-color:var(--border); background:rgba(0,0,0,0.4)">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="station-dot active"></div>
+                <span class="font-tech font-bold tracking-widest">南方<span style="color:var(--cyan)">电信</span></span>
+            </div>
+            <nav class="flex items-center gap-8 font-tech text-xs tracking-widest" style="color:var(--text-sec)">
+                <a href="#features" class="nav-link">FEATURES</a>
+                <a href="#explore" class="nav-link">EXPLORE</a>
+                <a href="#transit" class="nav-link">TRANSIT</a>
+            </nav>
+        </div>
+        <div class="transit-line my-8"></div>
+        <p class="text-center font-tech text-xs tracking-widest" style="color:var(--text-dim)">
+            © 2025 TELESOUTH · 不保留任何权利
+        </p>
+    </div>
+</footer>
+
+<script>
+    /* ===== 导航栏滚动背景 ===== */
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+        header.style.background = window.scrollY > 80
+            ? 'rgba(6,10,16,0.95)' : 'rgba(6,10,16,0.75)';
+    });
+
+    /* ===== 滚动渐入 ===== */
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    /* ===== 轮播图 ===== */
+    document.querySelectorAll('.carousel').forEach(carousel => {
+        const inner = carousel.querySelector('.carousel-inner');
+        const slides = Array.from(inner.querySelectorAll('.slide'));
+        const dotsBox = carousel.querySelector('.carousel-dots');
+        const prevBtn = carousel.querySelector('.prev');
+        const nextBtn = carousel.querySelector('.next');
+        const delay = +carousel.dataset.autoplay || 4000;
+        let idx = 0, timer = null;
+
+        slides.forEach((_, i) => {
+            const d = document.createElement('span');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            d.addEventListener('click', () => go(i));
+            dotsBox.appendChild(d);
+        });
+        const dots = Array.from(dotsBox.children);
+
+        function update() {
+            inner.style.setProperty('--idx', idx);
+            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+        function go(i) { idx = (i + slides.length) % slides.length; update(); reset(); }
+        function next() { go(idx + 1); }
+        function prev() { go(idx - 1); }
+        function reset() { clearInterval(timer); timer = setInterval(next, delay); }
+
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
+        carousel.addEventListener('mouseenter', () => clearInterval(timer));
+        carousel.addEventListener('mouseleave', reset);
+
+        update(); reset();
+    });
+</script>
+</body>
+</html>
