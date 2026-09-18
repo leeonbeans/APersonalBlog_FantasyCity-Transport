@@ -1146,7 +1146,7 @@ function runLoader(){
     if(pct) pct.textContent = p + '%';
   };
 
-  const MAX_WAIT = 8000;  // 超时兜底：个别文件卡住也不会一直转圈，8s 后强制进入
+  const MAX_WAIT = 900000;  // 超时兜底：个别文件卡住也不会一直转圈，8s 后强制进入
   const ready = preloadAllAudio(setProgress).then(() => 'ready');
   const timeout = new Promise(res => setTimeout(() => res('timeout'), MAX_WAIT));
 
