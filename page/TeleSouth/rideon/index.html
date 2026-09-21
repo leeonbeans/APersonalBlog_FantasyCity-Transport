@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>跨洋城际 | Oversea Intercity</title>
-  <link rel="stylesheet" href="styles.css?v=4"/>
+  <link rel="stylesheet" href="styles.css?v=5"/>
 </head>
 <body>
 
@@ -25,6 +25,15 @@
     </div>
     <div class="loader-bar"><div class="loader-bar-fill" id="loader-bar-fill"></div></div>
     <div class="loader-status"><span id="loader-pct">0%</span> · 正在缓冲乘车资源…</div>
+    <!-- 加载自救区：未就绪音频清单 + 重试/跳过（iOS Safari 等限制预加载的环境用） -->
+    <div class="loader-pending" id="loader-pending" hidden>
+      <div class="loader-pending-title">以下音频尚未就绪</div>
+      <ul class="loader-pending-list" id="loader-pending-list"></ul>
+    </div>
+    <div class="loader-actions" id="loader-actions" hidden>
+      <button class="loader-btn retry" id="loader-retry" type="button">重试加载</button>
+      <button class="loader-btn skip" id="loader-skip" type="button">跳过加载，直接进入</button>
+    </div>
   </div>
 </div>
 
@@ -434,6 +443,6 @@
   </div>
 </div>
 
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>

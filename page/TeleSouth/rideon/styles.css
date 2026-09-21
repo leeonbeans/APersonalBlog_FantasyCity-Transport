@@ -1484,6 +1484,33 @@ kbd{
 .loader-status{ margin-top:14px; font-size:12px; letter-spacing:1px; color:var(--text-dim); }
 .loader-status #loader-pct{ font-family:'Orbitron',Consolas,monospace; color:var(--line-dark); font-weight:700; }
 
+/* ---- 加载自救区：未就绪音频清单 + 重试/跳过 ---- */
+.loader-pending{
+  margin-top:16px; width:min(340px,72vw); text-align:left;
+  background:#fff; border:1px solid var(--line-soft); border-radius:10px;
+  padding:10px 12px; max-height:132px; overflow:auto;
+  box-shadow:0 4px 14px rgba(26,36,24,.06);
+}
+.loader-pending[hidden]{ display:none; }
+.loader-pending-title{ font-size:11px; letter-spacing:1px; color:var(--text-mute); margin-bottom:6px; }
+.loader-pending-list{ list-style:none; display:flex; flex-direction:column; gap:4px; }
+.loader-pending-list li{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-dim); }
+.loader-pending-list .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); flex:none; animation:loaderDot 1s ease-in-out infinite; }
+.loader-pending-list .dot.fail{ background:var(--danger); animation:none; }
+.loader-pending-list em{ margin-left:auto; font-style:normal; font-size:10px; color:var(--text-mute); flex:none; }
+.loader-pending-list li.fail em{ color:var(--danger); }
+@keyframes loaderDot{ 0%,100%{ opacity:.35; } 50%{ opacity:1; } }
+.loader-actions{ display:flex; gap:10px; margin-top:16px; }
+.loader-actions[hidden]{ display:none; }
+.loader-btn{
+  font-family:inherit; font-size:13px; font-weight:700; letter-spacing:1px; cursor:pointer;
+  padding:9px 18px; border-radius:999px; border:1px solid var(--line);
+  transition:transform .15s, box-shadow .15s;
+}
+.loader-btn:active{ transform:scale(.96); }
+.loader-btn.retry{ background:var(--line); color:#fff; box-shadow:0 6px 16px var(--line-glow); }
+.loader-btn.skip{ background:transparent; color:var(--text-dim); border-color:var(--line-soft); }
+
 /* ==================== 网络超时提示框 ==================== */
 .net-toast{
   position:fixed; top:18px; left:50%; transform:translate(-50%,-160%);

@@ -1091,6 +1091,14 @@ function bindEvents(){
 }
 
 // ============ 初始化 ============
+// 本轮预加载目标（文件名 + 音频元素），供加载遮罩的“未就绪清单 / 重试”使用
+let LOAD_TARGETS = [];
+// 尚未缓冲完成的目标（readyState<4）；error 非空表示加载失败
+function pendingLoadItems(){
+  return LOAD_TARGETS
+    .filter(t => t.audio && t.audio.readyState < 4)
+    .map(t => ({ name:t.name, failed:!!t.audio.error }));
+}
 // 预加载所有会播放的音频文件：避免首次播放因音频未就绪（status='loading'）被跳过。
 // 返回 Promise：全部缓冲完成（或加载失败）时 resolve；onProgress(done,total) 用于加载动画进度。
 function preloadAllAudio(onProgress){
@@ -1105,10 +1113,13 @@ function preloadAllAudio(onProgress){
   Object.values(APPROACHING_AUDIO).forEach(f => { if(f) files.add(f); });
 
   const clips = Array.from(files).map(f => audio.getOrLoad(f));
+  // 记录本轮加载目标，供“未就绪清单 / 重试”查询
+  LOAD_TARGETS = clips.map(c => ({ name:c.filename, audio:c.audio }));
+  LOAD_TARGETS.push({ name:'running.mp3（背景音）', audio:audio.bg });
 
   return new Promise(resolve => {
     // 背景音 running.mp3 一并纳入缓冲统计（“所有东西都缓冲完”）
-    const targets = clips.map(c => c.audio).concat([audio.bg]);
+    const targets = LOAD_TARGETS.map(t => t.audio);
     const total = targets.length;
     if(total === 0){ resolve(); return; }
     let done = 0;
@@ -1132,11 +1143,20 @@ function preloadAllAudio(onProgress){
   });
 }
 
-// 加载动画：统计缓冲进度，全部就绪（或超时兜底）后淡出遮罩、恢复正常界面
+// 加载动画：统计缓冲进度；全部就绪 / 超时兜底 / 手动跳过 后淡出遮罩。
+// 并提供“未就绪音频清单 + 重试 / 跳过”自救入口（iOS Safari 等限制预加载的环境）。
+let loaderSettled = false;
+let loaderPendingTimer = null;
+let loaderHelpTimer = null;
 function runLoader(){
   const overlay = document.getElementById('loader-overlay');
   const bar = document.getElementById('loader-bar-fill');
   const pct = document.getElementById('loader-pct');
+  const pendingBox = document.getElementById('loader-pending');
+  const pendingList = document.getElementById('loader-pending-list');
+  const actions = document.getElementById('loader-actions');
+  const retryBtn = document.getElementById('loader-retry');
+  const skipBtn = document.getElementById('loader-skip');
   // 若遮罩不存在，仍执行预加载（保留原有防静默能力）
   if(!overlay){ preloadAllAudio(); return; }
 
@@ -1145,18 +1165,53 @@ function runLoader(){
     if(bar) bar.style.width = p + '%';
     if(pct) pct.textContent = p + '%';
   };
+  // 刷新“未就绪音频”清单（缓冲中 / 加载失败）
+  const renderPending = () => {
+    if(!pendingBox || !pendingList) return;
+    const items = pendingLoadItems();
+    if(items.length === 0){ pendingBox.hidden = true; pendingList.innerHTML = ''; return; }
+    pendingBox.hidden = false;
+    pendingList.innerHTML = items.map(it =>
+      `<li class="${it.failed ? 'fail' : ''}"><span class="dot ${it.failed ? 'fail' : ''}"></span>` +
+      `${escapeHtml(it.name)}<em>${it.failed ? '加载失败' : '缓冲中'}</em></li>`).join('');
+  };
 
-  const MAX_WAIT = 900000;  // 超时兜底：个别文件卡住也不会一直转圈，8s 后强制进入
-  const ready = preloadAllAudio(setProgress).then(() => 'ready');
-  const timeout = new Promise(res => setTimeout(() => res('timeout'), MAX_WAIT));
-
-  Promise.race([ready, timeout]).then((which) => {
+  const settle = (which) => {
+    if(loaderSettled) return;
+    loaderSettled = true;
+    if(loaderHelpTimer){ clearTimeout(loaderHelpTimer); loaderHelpTimer = null; }
+    if(loaderPendingTimer){ clearInterval(loaderPendingTimer); loaderPendingTimer = null; }
     setProgress(1, 1);
+    renderPending();
     overlay.classList.add('done');
     setTimeout(() => { overlay.style.display = 'none'; }, 650);
     // 仅当“超时兜底”触发（资源未全部就绪）时，提示网络超时
     if(which === 'timeout') showNetTimeout();
+  };
+
+  const beginRace = () => {
+    const MAX_WAIT = 900000;  // 超时兜底：个别文件卡住也不会一直转圈（调试期调大）
+    const ready = preloadAllAudio((d, t) => { setProgress(d, t); renderPending(); }).then(() => 'ready');
+    const timeout = new Promise(res => setTimeout(() => res('timeout'), MAX_WAIT));
+    Promise.race([ready, timeout]).then(settle);
+  };
+
+  // 重试：对仍未就绪的元素重新 load()（点击本身是用户手势，可解除 iOS 的预加载限制）
+  if(retryBtn) retryBtn.addEventListener('click', () => {
+    if(loaderSettled) return;
+    LOAD_TARGETS.forEach(t => { if(t.audio && t.audio.readyState < 4){ try{ t.audio.load(); }catch(_){} } });
+    renderPending();
+    beginRace();
   });
+  // 跳过：不等待缓冲直接进入（不弹超时提示；后续发车手势仍会触发播放/加载）
+  if(skipBtn) skipBtn.addEventListener('click', () => settle('skip'));
+
+  // 加载偏慢时才露出自救按钮，避免快速加载时闪现
+  loaderHelpTimer = setTimeout(() => { if(!loaderSettled && actions) actions.hidden = false; }, 4000);
+  // 清单定时刷新（iOS 上可能没有任何进度事件，靠轮询反映状态）
+  loaderPendingTimer = setInterval(renderPending, 800);
+  renderPending();
+  beginRace();
 }
 
 // 顶部居中红色提示框：“网络请求超时”（6s 后自动收起，可手动关闭）
